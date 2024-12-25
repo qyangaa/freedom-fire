@@ -1,0 +1,98 @@
+Create a FIRE (Financial Independence, Retire Early) Calculator web application using React, TypeScript, and TailwindCSS. This calculator will help users estimate when they can achieve financial independence based on various financial inputs and projections.
+
+Project Setup:
+
+1. initialize git and do the first comit with the cursorrules file
+2. Initialize a new React project with Vite, TypeScript, and TailwindCSS.
+3. Use the existing `.cursorrules` file for code style, structure, and best practices.
+
+README:
+Create a README.md file with the following content:
+
+# FIRE Calculator
+
+This web application helps users calculate their path to Financial Independence and Retire Early (FIRE). Users can input their financial details and get projections on when they might achieve financial independence.
+
+## Features
+
+- Input current age, savings, income, and expenses
+- Adjust investment return rates, inflation, and tax rates
+- Account for career growth and slowdown
+- Add custom retirement expenses
+- Include optional kids and parents care expenses
+- View projected FIRE age and years to FIRE
+- Visualize net worth and expenses projections
+
+## Tech Stack
+
+- React
+- TypeScript
+- TailwindCSS
+- Chart.js for data visualization
+
+## Getting Started
+
+1. Clone the repository
+2. Run `npm install` to install dependencies
+3. Run `npm run dev` to start the development server
+4. Open `http://localhost:5173` in your browser
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+Implementation Details:
+
+1. Create the following components:
+   a. FireCalculator (main component)
+   b. FireForm (input form)
+   c. FireResults (results display)
+
+2. Implement FireCalculator:
+
+   - Manage state for form inputs and calculation results
+   - Render FireForm and FireResults
+   - Implement calculation logic or use a custom hook
+
+3. Implement FireForm:
+
+   - Create form inputs for:
+     - Current Age
+     - Current Savings
+     - Annual Income
+     - Annual Expenses
+     - Investment Return (slider)
+     - Inflation Rate (slider)
+     - Tax Rate (slider)
+     - Career Growth Rate (slider)
+     - Career Growth Slowdown Age
+     - Additional Retirement Expenses (dynamic list)
+     - Kids Expenses (optional, with toggle)
+     - Parents Care Expenses (optional, with toggle)
+   - Use TailwindCSS for styling
+   - Implement form validation
+
+4. Implement FireResults:
+
+   - Display calculation results:
+     - Age of Financial Independence
+     - Years until FIRE
+     - Final Net Worth
+     - Projected Annual Expenses at FIRE (in today's dollars)
+     - Real Investment Return (after inflation)
+   - Create charts using Chart.js:
+     - Net Worth Projection
+     - Expenses Projection
+
+5. Create a utility function for FIRE calculations:
+
+   - Account for all input parameters
+   - Calculate year-by-year projections
+   - Determine FIRE age based on when investment returns cover expenses
+   - Return detailed results for display and charting
+
+6. Implement responsive design using TailwindCSS
+7. Add proper error handling and user feedback
+8. Optimize performance and implement accessibility features
+
+Start by creating the project structure and implementing the FireCalculator component.
