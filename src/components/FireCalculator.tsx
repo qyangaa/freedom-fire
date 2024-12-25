@@ -156,24 +156,24 @@ export default function FireCalculator() {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="flex justify-between items-center mb-8">
+    <div className="container mx-auto px-4 py-12 max-w-5xl">
+      <div className="flex justify-between items-center mb-12">
         <div>
-          <h1 className="text-3xl font-bold">FreedomFIRE Calculator</h1>
-          <p className="text-gray-600 mt-1">
+          <h1 className="text-4xl font-light tracking-tight">FreedomFIRE</h1>
+          <p className="text-gray-500 mt-2 text-lg">
             Plan Your Path to Financial Independence
           </p>
         </div>
         <button
           onClick={() => setIsImportExportOpen(true)}
-          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors"
+          className="bg-black text-white px-5 py-2.5 rounded-lg hover:bg-gray-800 transition-colors text-sm"
         >
           Import/Export Data
         </button>
       </div>
 
-      <div className="max-w-4xl mx-auto">
-        <div className="bg-white rounded-lg shadow-lg p-6">
+      <div className="space-y-12">
+        <div className="bg-white rounded-xl p-8 shadow-sm border border-gray-100">
           <FireForm
             inputs={inputs}
             onInputChange={handleInputChange}
@@ -182,7 +182,7 @@ export default function FireCalculator() {
           />
 
           {error && (
-            <div className="mt-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
+            <div className="mt-6 p-4 bg-red-50 border border-red-100 text-red-600 rounded-lg text-sm">
               {error}
             </div>
           )}
@@ -191,7 +191,7 @@ export default function FireCalculator() {
             <button
               onClick={handleCalculate}
               disabled={isCalculating}
-              className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 disabled:bg-blue-300 transition-colors"
+              className="w-full bg-black text-white py-3 px-6 rounded-lg hover:bg-gray-800 disabled:bg-gray-300 transition-colors text-sm font-medium"
             >
               {isCalculating ? "Calculating..." : "Calculate FIRE"}
             </button>
@@ -200,29 +200,31 @@ export default function FireCalculator() {
 
         {results && (
           <>
-            <div className="mt-8 bg-white rounded-lg shadow-lg p-6">
-              <h2 className="text-2xl font-bold mb-4">Results</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="bg-white rounded-xl p-8 shadow-sm border border-gray-100">
+              <h2 className="text-2xl font-light mb-8">Results</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div>
-                  <h3 className="text-lg font-semibold mb-2">FIRE Age</h3>
-                  <p className="text-3xl text-blue-600">{results.fireAge}</p>
-                  <p className="text-gray-600">
+                  <h3 className="text-sm font-medium text-gray-500 mb-1">
+                    FIRE Age
+                  </h3>
+                  <p className="text-4xl font-light">{results.fireAge}</p>
+                  <p className="text-gray-500 text-sm mt-1">
                     Years to FIRE: {results.yearsToFire}
                   </p>
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold mb-2">
+                  <h3 className="text-sm font-medium text-gray-500 mb-1">
                     Final Net Worth
                   </h3>
-                  <p className="text-3xl text-blue-600">
+                  <p className="text-4xl font-light">
                     ${Math.round(results.finalNetWorth).toLocaleString()}
                   </p>
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold mb-2">
+                  <h3 className="text-sm font-medium text-gray-500 mb-1">
                     Annual Expenses at FIRE
                   </h3>
-                  <p className="text-3xl text-blue-600">
+                  <p className="text-4xl font-light">
                     $
                     {Math.round(
                       results.projectedAnnualExpensesAtFire
@@ -230,18 +232,18 @@ export default function FireCalculator() {
                   </p>
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold mb-2">
+                  <h3 className="text-sm font-medium text-gray-500 mb-1">
                     Real Investment Return
                   </h3>
-                  <p className="text-3xl text-blue-600">
+                  <p className="text-4xl font-light">
                     {(results.realInvestmentReturn * 100).toFixed(1)}%
                   </p>
-                  <p className="text-gray-600">After inflation</p>
+                  <p className="text-gray-500 text-sm mt-1">After inflation</p>
                 </div>
               </div>
             </div>
 
-            <div className="mt-8">
+            <div className="bg-white rounded-xl p-8 shadow-sm border border-gray-100">
               <FireCharts
                 projections={results.yearlyProjections}
                 fireAge={results.fireAge}
@@ -251,7 +253,7 @@ export default function FireCalculator() {
               />
             </div>
 
-            <div className="mt-8">
+            <div className="bg-white rounded-xl p-8 shadow-sm border border-gray-100">
               <FireExplanation inputs={inputs} results={results} />
             </div>
           </>

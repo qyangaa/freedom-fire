@@ -236,7 +236,7 @@ export default function FireSummaryExport({
     <div className="relative">
       <button
         onClick={handleExport}
-        className="absolute -top-10 right-0 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors"
+        className="absolute -top-12 right-0 bg-black text-white px-5 py-2.5 rounded-lg hover:bg-gray-800 transition-colors text-sm"
       >
         Export Full Summary
       </button>
@@ -247,38 +247,42 @@ export default function FireSummaryExport({
       >
         {/* Title */}
         <div className="text-center">
-          <h1 className="text-2xl font-bold">FreedomFIRE Summary</h1>
-          <p className="text-sm text-gray-600">
-            Your Path to Financial Independence
+          <h1 className="text-3xl font-light tracking-tight">FreedomFIRE</h1>
+          <p className="text-gray-500 mt-2">
+            Your Financial Independence Summary
           </p>
         </div>
 
         {/* Key Results */}
-        <div className="bg-gray-50 p-4 rounded-lg">
-          <h2 className="text-lg font-semibold mb-3">Key Results</h2>
-          <div className="space-y-2">
+        <div className="bg-gray-50 p-6 rounded-xl">
+          <h2 className="text-lg font-light mb-4">Key Results</h2>
+          <div className="space-y-3">
             <div>
-              <span className="font-medium">FIRE Age:</span>{" "}
-              <span className="text-blue-600">{results.fireAge}</span>
-              <span className="text-gray-600 text-sm ml-2">
+              <span className="text-sm text-gray-500">FIRE Age:</span>{" "}
+              <span className="text-xl font-light">{results.fireAge}</span>
+              <span className="text-gray-500 text-sm ml-2">
                 ({results.yearsToFire} years to go)
               </span>
             </div>
             <div>
-              <span className="font-medium">Final Net Worth:</span>{" "}
-              <span className="text-blue-600">
+              <span className="text-sm text-gray-500">Final Net Worth:</span>{" "}
+              <span className="text-xl font-light">
                 {formatCurrency(results.finalNetWorth)}
               </span>
             </div>
             <div>
-              <span className="font-medium">Annual Expenses at FIRE:</span>{" "}
-              <span className="text-blue-600">
+              <span className="text-sm text-gray-500">
+                Annual Expenses at FIRE:
+              </span>{" "}
+              <span className="text-xl font-light">
                 {formatCurrency(results.projectedAnnualExpensesAtFire)}
               </span>
             </div>
             <div>
-              <span className="font-medium">Real Investment Return:</span>{" "}
-              <span className="text-blue-600">
+              <span className="text-sm text-gray-500">
+                Real Investment Return:
+              </span>{" "}
+              <span className="text-xl font-light">
                 {formatPercentage(results.realInvestmentReturn)}
               </span>
             </div>
@@ -286,8 +290,8 @@ export default function FireSummaryExport({
         </div>
 
         {/* Charts */}
-        <div className="space-y-6">
-          <div>
+        <div className="space-y-8">
+          <div className="bg-gray-50 p-4 rounded-xl">
             <Line
               data={simplifiedNetWorthData}
               options={getMobileOptions(netWorthOptions)}
@@ -295,7 +299,7 @@ export default function FireSummaryExport({
               height={280}
             />
           </div>
-          <div>
+          <div className="bg-gray-50 p-4 rounded-xl">
             <Line
               data={simplifiedIncomeExpensesData}
               options={getMobileOptions(incomeExpensesOptions)}
@@ -306,97 +310,39 @@ export default function FireSummaryExport({
         </div>
 
         {/* Key Assumptions */}
-        <div className="bg-gray-50 p-4 rounded-lg">
-          <h2 className="text-lg font-semibold mb-3">Key Assumptions</h2>
+        <div className="bg-gray-50 p-6 rounded-xl">
+          <h2 className="text-lg font-light mb-4">Key Assumptions</h2>
           <div className="space-y-2 text-sm">
             <div>
-              <span className="font-medium">Current Age:</span>{" "}
+              <span className="text-gray-500">Current Age:</span>{" "}
               {inputs.currentAge}
             </div>
             <div>
-              <span className="font-medium">Current Savings:</span>{" "}
+              <span className="text-gray-500">Current Savings:</span>{" "}
               {formatCurrency(inputs.currentSavings)}
             </div>
             <div>
-              <span className="font-medium">Annual Income:</span>{" "}
+              <span className="text-gray-500">Annual Income:</span>{" "}
               {formatCurrency(inputs.annualIncome)}
             </div>
             <div>
-              <span className="font-medium">Annual Expenses:</span>{" "}
+              <span className="text-gray-500">Annual Expenses:</span>{" "}
               {formatCurrency(inputs.annualExpenses)}
             </div>
             <div>
-              <span className="font-medium">Investment Return:</span>{" "}
+              <span className="text-gray-500">Investment Return:</span>{" "}
               {formatPercentage(inputs.investmentReturn)}
             </div>
             <div>
-              <span className="font-medium">Inflation Rate:</span>{" "}
+              <span className="text-gray-500">Inflation Rate:</span>{" "}
               {formatPercentage(inputs.inflationRate)}
             </div>
           </div>
         </div>
 
-        {/* Additional Expenses Summary */}
-        {(inputs.hasKidsExpenses ||
-          inputs.hasParentsCare ||
-          inputs.additionalRetirementExpenses.length > 0) && (
-          <div className="bg-gray-50 p-4 rounded-lg">
-            <h2 className="text-lg font-semibold mb-3">Additional Expenses</h2>
-            <div className="space-y-4 text-sm">
-              {inputs.additionalRetirementExpenses.length > 0 && (
-                <div>
-                  <h3 className="font-medium">Retirement Expenses:</h3>
-                  <ul className="list-disc pl-5">
-                    {inputs.additionalRetirementExpenses.map((expense) => (
-                      <li key={expense.id}>
-                        {formatCurrency(expense.amount)} per year
-                        {expense.startAge &&
-                          ` starting at age ${expense.startAge}`}
-                        {expense.endAge && ` until age ${expense.endAge}`}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-
-              {inputs.hasKidsExpenses && inputs.kidsExpenses && (
-                <div>
-                  <h3 className="font-medium">Kids Expenses:</h3>
-                  <ul className="list-disc pl-5">
-                    {inputs.kidsExpenses.map((expense) => (
-                      <li key={expense.id}>
-                        {formatCurrency(expense.amount)} per year
-                        {expense.startAge &&
-                          ` starting at age ${expense.startAge}`}
-                        {expense.endAge && ` until age ${expense.endAge}`}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-
-              {inputs.hasParentsCare && inputs.parentsCareExpenses && (
-                <div>
-                  <h3 className="font-medium">Parents Care Expenses:</h3>
-                  <ul className="list-disc pl-5">
-                    {inputs.parentsCareExpenses.map((expense) => (
-                      <li key={expense.id}>
-                        {formatCurrency(expense.amount)} per year
-                        {expense.startAge &&
-                          ` starting at age ${expense.startAge}`}
-                        {expense.endAge && ` until age ${expense.endAge}`}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-            </div>
-          </div>
-        )}
-
         {/* Footer */}
-        <div className="text-center text-xs text-gray-500 pt-4 border-t">
-          <p>Generated by FreedomFIRE Calculator</p>
+        <div className="text-center text-xs text-gray-400 pt-4 border-t border-gray-100">
+          <p>Generated by FreedomFIRE</p>
           <p>All values are in today's dollars, adjusted for inflation</p>
         </div>
       </div>
