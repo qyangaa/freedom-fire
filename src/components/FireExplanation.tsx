@@ -1,5 +1,4 @@
 import type { ExtendedFireInputs, FireResults } from "../types/fire";
-import { toNominalValue } from "../utils/fireCalculations";
 
 interface FireExplanationProps {
   inputs: ExtendedFireInputs;
@@ -21,11 +20,6 @@ export default function FireExplanation({
   const formatPercentage = (value: number) => {
     return `${(value * 100).toFixed(1)}%`;
   };
-
-  // Get the projection at FIRE age
-  const fireProjection = results.yearlyProjections.find(
-    (p) => p.age === results.fireAge
-  );
 
   // Calculate some example values for different time periods
   const yearsToFire = results.fireAge - inputs.currentAge;

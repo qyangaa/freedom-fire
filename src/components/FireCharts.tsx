@@ -66,8 +66,9 @@ export default function FireCharts({
         callbacks: {
           title: (context) => {
             const age = context[0].label;
-            const years = parseInt(age) - projections[0].age;
-            return `Age ${age} (${years} years from now)`;
+            return `Age ${age} (${
+              parseInt(age) - projections[0].age
+            } years from now)`;
           },
           label: (context) => {
             const label = context.dataset.label || "";
