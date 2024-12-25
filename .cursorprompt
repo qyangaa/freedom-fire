@@ -9,6 +9,7 @@ Project Setup:
 README:
 Create a README.md file with the following content:
 
+```
 # FIRE Calculator
 
 This web application helps users calculate their path to Financial Independence and Retire Early (FIRE). Users can input their financial details and get projections on when they might achieve financial independence.
@@ -40,6 +41,7 @@ This web application helps users calculate their path to Financial Independence 
 ## Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
+```
 
 Implementation Details:
 
