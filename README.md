@@ -2,6 +2,8 @@
 
 A modern, interactive financial independence calculator that helps you plan your path to FIRE (Financial Independence, Retire Early).
 
+[Live Demo](https://freedom-fire.vercel.app/)
+
 ## Features
 
 - 📊 Interactive visualizations of your financial journey
@@ -43,7 +45,7 @@ A modern, interactive financial independence calculator that helps you plan your
 1. Clone the repository
 
 ```bash
-git clone https://github.com/yourusername/freedom-fire.git
+git clone https://github.com/qyangaa/freedom-fire.git
 cd freedom-fire
 ```
 
