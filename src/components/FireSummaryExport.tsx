@@ -63,65 +63,64 @@ export default function FireSummaryExport({
     options: ChartOptions<"line">
   ): ChartOptions<"line"> => ({
     ...options,
-    responsive: false,
-    maintainAspectRatio: false,
+    layout: {
+      padding: {
+        left: 8,
+        right: 8,
+        top: 8,
+        bottom: 8,
+      },
+    },
     elements: {
       point: {
-        radius: 0, // Remove markers
-        hitRadius: 10, // Keep hover detection area
+        radius: 0,
+        hitRadius: 10,
       },
       line: {
-        borderWidth: 2.5, // Make lines slightly thicker
+        borderWidth: 2,
+        tension: 0.4,
       },
     },
     plugins: {
       ...options.plugins,
-      annotation: {
-        annotations: {
-          fireAge: {
-            type: "line",
-            xMin: (incomeExpensesData.labels || []).findIndex(
-              (age) => Number(age) === results.fireAge
-            ),
-            xMax: (incomeExpensesData.labels || []).findIndex(
-              (age) => Number(age) === results.fireAge
-            ),
-            borderColor: "rgb(34, 197, 94)", // green-600
-            borderWidth: 2,
-            label: {
-              display: true,
-              content: "FIRE Age",
-              position: "start",
-            },
-          },
-          ...((options.plugins?.annotation as any)?.annotations?.zeroLine
-            ? {
-                zeroLine: {
-                  type: "line",
-                  yMin: 0,
-                  yMax: 0,
-                  borderColor: "rgb(156, 163, 175)", // gray-400
-                  borderWidth: 1,
-                  borderDash: [2, 2],
-                },
-              }
-            : {}),
-        },
-      },
       legend: {
         ...options.plugins?.legend,
         position: "bottom" as const,
+        align: "start" as const,
         labels: {
           ...options.plugins?.legend?.labels,
-          boxWidth: 15,
-          padding: 15,
-          font: { size: 11 },
+          boxWidth: 8,
+          padding: 12,
+          font: {
+            size: 10,
+            family: "system-ui",
+          },
+          usePointStyle: true,
         },
       },
       title: {
         ...options.plugins?.title,
-        font: { size: 13, weight: "bold" },
-        padding: { top: 10, bottom: 15 },
+        font: {
+          size: 12,
+          family: "system-ui",
+          weight: "normal",
+        },
+        padding: { top: 8, bottom: 12 },
+        color: "rgb(107, 114, 128)", // text-gray-500
+      },
+      tooltip: {
+        ...options.plugins?.tooltip,
+        backgroundColor: "rgba(0, 0, 0, 0.8)",
+        padding: 6,
+        titleFont: {
+          size: 10,
+          family: "system-ui",
+        },
+        bodyFont: {
+          size: 9,
+          family: "system-ui",
+        },
+        cornerRadius: 4,
       },
     },
     scales: {
@@ -130,31 +129,44 @@ export default function FireSummaryExport({
         ...options.scales?.y,
         ticks: {
           ...options.scales?.y?.ticks,
-          font: { size: 11 },
-          maxTicksLimit: 6, // Limit number of ticks for cleaner look
+          font: {
+            size: 9,
+            family: "system-ui",
+          },
+          padding: 4,
+          maxTicksLimit: 5,
         },
         title: {
           ...options.scales?.y?.title,
-          font: { size: 11 },
+          display: false,
         },
         grid: {
-          color: "rgba(0, 0, 0, 0.1)",
+          color: "rgba(0, 0, 0, 0.06)",
+        },
+        border: {
+          display: false,
         },
       },
       x: {
         ...options.scales?.x,
         ticks: {
           ...options.scales?.x?.ticks,
-          font: { size: 11 },
-          maxTicksLimit: 6, // Limit number of ticks
+          font: {
+            size: 9,
+            family: "system-ui",
+          },
+          padding: 4,
+          maxTicksLimit: 5,
         },
         title: {
           ...options.scales?.x?.title,
-          font: { size: 11 },
+          display: false,
         },
         grid: {
-          display: false, // Remove x-axis grid lines
-          color: "rgba(0, 0, 0, 0.1)",
+          display: false,
+        },
+        border: {
+          display: false,
         },
       },
     },
@@ -243,7 +255,7 @@ export default function FireSummaryExport({
       <div
         ref={containerRef}
         className="bg-white p-8 space-y-8"
-        style={{ width: "390px" }} // iPhone 12 Pro width
+        style={{ width: "390px" }}
       >
         {/* Title */}
         <div className="text-center">
@@ -292,20 +304,30 @@ export default function FireSummaryExport({
         {/* Charts */}
         <div className="space-y-8">
           <div className="bg-gray-50 p-4 rounded-xl">
-            <Line
-              data={simplifiedNetWorthData}
-              options={getMobileOptions(netWorthOptions)}
-              width={350}
-              height={280}
-            />
+            <div className="w-full">
+              <Line
+                data={simplifiedNetWorthData}
+                options={{
+                  ...getMobileOptions(netWorthOptions),
+                  responsive: true,
+                  maintainAspectRatio: true,
+                  aspectRatio: 1.4,
+                }}
+              />
+            </div>
           </div>
           <div className="bg-gray-50 p-4 rounded-xl">
-            <Line
-              data={simplifiedIncomeExpensesData}
-              options={getMobileOptions(incomeExpensesOptions)}
-              width={350}
-              height={280}
-            />
+            <div className="w-full">
+              <Line
+                data={simplifiedIncomeExpensesData}
+                options={{
+                  ...getMobileOptions(incomeExpensesOptions),
+                  responsive: true,
+                  maintainAspectRatio: true,
+                  aspectRatio: 1.4,
+                }}
+              />
+            </div>
           </div>
         </div>
 

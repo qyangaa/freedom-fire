@@ -64,11 +64,40 @@ export default function FireCharts({
       mode: "index" as const,
       intersect: false,
     },
+    elements: {
+      point: {
+        radius: 0, // Remove points
+        hitRadius: 10, // Keep hover detection area
+      },
+      line: {
+        tension: 0.4, // Smooth lines
+        borderWidth: 2, // Thinner lines
+      },
+    },
     plugins: {
       legend: {
         position: "top" as const,
+        labels: {
+          boxWidth: 12,
+          padding: 15,
+          font: {
+            size: 11,
+            family: "system-ui",
+          },
+          usePointStyle: true,
+        },
       },
       tooltip: {
+        backgroundColor: "rgba(0, 0, 0, 0.8)",
+        padding: 12,
+        titleFont: {
+          size: 13,
+          family: "system-ui",
+        },
+        bodyFont: {
+          size: 12,
+          family: "system-ui",
+        },
         callbacks: {
           title: (context) => {
             const age = context[0].label;
@@ -99,16 +128,50 @@ export default function FireCharts({
       y: {
         ticks: {
           callback: (value) => formatCurrency(Number(value)),
+          font: {
+            size: 11,
+            family: "system-ui",
+          },
+          padding: 8,
+        },
+        grid: {
+          color: "rgba(0, 0, 0, 0.06)",
+        },
+        border: {
+          display: false,
         },
         title: {
           display: true,
           text: "Amount (in today's dollars)",
+          font: {
+            size: 11,
+            family: "system-ui",
+          },
+          padding: { top: 10, bottom: 0 },
         },
       },
       x: {
+        grid: {
+          display: false,
+        },
+        border: {
+          display: false,
+        },
+        ticks: {
+          font: {
+            size: 11,
+            family: "system-ui",
+          },
+          padding: 8,
+        },
         title: {
           display: true,
           text: "Age",
+          font: {
+            size: 11,
+            family: "system-ui",
+          },
+          padding: { top: 10, bottom: 0 },
         },
       },
     },
