@@ -9,6 +9,7 @@ interface FormLabelProps {
   futureValue?: number;
   inflationRate?: number;
   years?: number;
+  showDetailedFutureValue?: boolean;
 }
 
 export default function FormLabel({
@@ -20,6 +21,7 @@ export default function FormLabel({
   futureValue,
   inflationRate,
   years,
+  showDetailedFutureValue = false,
 }: FormLabelProps) {
   const baseClasses = "block text-sm font-medium text-gray-700 mb-1";
   const combinedClasses = `${baseClasses} ${className}`;
@@ -32,7 +34,7 @@ export default function FormLabel({
     }).format(value);
   };
 
-  const getFutureValueText = () => {
+  const getFutureValueDetails = () => {
     if (
       futureValue === undefined ||
       inflationRate === undefined ||
@@ -40,19 +42,56 @@ export default function FormLabel({
     ) {
       return null;
     }
+
     const futureAmount = futureValue * Math.pow(1 + inflationRate, years);
-    return `(${formatCurrency(futureAmount)} in ${years} years)`;
+    const inflationImpact = futureAmount - futureValue;
+    const inflationPercentage =
+      ((futureAmount - futureValue) / futureValue) * 100;
+
+    if (showDetailedFutureValue) {
+      return {
+        text: `${formatCurrency(futureAmount)} in ${years} years`,
+        tooltip: `
+          Today's Value: ${formatCurrency(futureValue)}
+          Future Value: ${formatCurrency(futureAmount)}
+          Inflation Impact: ${formatCurrency(
+            inflationImpact
+          )} (+${inflationPercentage.toFixed(1)}%)
+          Years: ${years}
+          Annual Inflation: ${(inflationRate * 100).toFixed(1)}%
+        `.trim(),
+      };
+    }
+
+    return {
+      text: `(${formatCurrency(futureAmount)} in ${years} years)`,
+      tooltip: `Includes ${(inflationRate * 100).toFixed(1)}% annual inflation`,
+    };
   };
 
-  const labelContent = (
+  const futureValueDetails = getFutureValueDetails();
+  const labelText = (
     <span>
       {label}
       {showTodaysDollar && (
         <span className="text-gray-500 text-sm ml-1">(today's dollars)</span>
       )}
-      {getFutureValueText() && (
-        <span className="text-gray-500 text-sm ml-1">
-          {getFutureValueText()}
+    </span>
+  );
+
+  const labelContent = (
+    <span className="flex flex-col">
+      <span className="flex items-center">
+        {labelText}
+        {tooltip && (
+          <span className="ml-1 text-gray-400 hover:text-gray-600">ⓘ</span>
+        )}
+      </span>
+      {futureValueDetails && (
+        <span className="text-xs text-gray-500 mt-0.5">
+          <Tooltip text={futureValueDetails.tooltip}>
+            {futureValueDetails.text}
+          </Tooltip>
         </span>
       )}
     </span>

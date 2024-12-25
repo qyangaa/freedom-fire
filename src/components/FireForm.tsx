@@ -87,6 +87,10 @@ export default function FireForm({
               label="Current Savings"
               tooltip="Your current total savings and investments"
               showTodaysDollar
+              futureValue={inputs.currentSavings}
+              inflationRate={inputs.inflationRate}
+              years={10}
+              showDetailedFutureValue
             />
             <input
               type="number"
@@ -108,6 +112,7 @@ export default function FireForm({
               futureValue={inputs.annualIncome}
               inflationRate={inputs.inflationRate}
               years={10}
+              showDetailedFutureValue
             />
             <input
               type="number"
@@ -129,6 +134,7 @@ export default function FireForm({
               futureValue={inputs.annualExpenses}
               inflationRate={inputs.inflationRate}
               years={10}
+              showDetailedFutureValue
             />
             <input
               type="number"
@@ -294,6 +300,7 @@ export default function FireForm({
                         ? expense.startAge - inputs.currentAge
                         : 0
                     }
+                    showDetailedFutureValue
                   />
                   <input
                     type="number"
@@ -426,6 +433,7 @@ export default function FireForm({
                             ? expense.startAge - inputs.currentAge
                             : 0
                         }
+                        showDetailedFutureValue
                       />
                       <input
                         type="number"
@@ -560,6 +568,7 @@ export default function FireForm({
                             ? expense.startAge - inputs.currentAge
                             : 0
                         }
+                        showDetailedFutureValue
                       />
                       <input
                         type="number"
