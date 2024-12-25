@@ -12,38 +12,22 @@ import ImportExportModal from "./ImportExportModal";
 
 const defaultInputs: ExtendedFireInputs = {
   // Basic inputs
-  currentAge: 31,
-  currentSavings: 800000,
-  annualIncome: 300000,
-  annualExpenses: 40000,
-  investmentReturn: 0.04,
-  inflationRate: 0.02,
-  taxRate: 0.35,
+  currentAge: 30,
+  currentSavings: 100000,
+  annualIncome: 100000,
+  annualExpenses: 50000,
+  investmentReturn: 0.07,
+  inflationRate: 0.03,
+  taxRate: 0.25,
   careerGrowthRate: 0.03,
   careerGrowthSlowdownAge: 45,
 
   // Additional expenses
   additionalRetirementExpenses: [],
-  hasKidsExpenses: true,
-  kidsExpenses: [
-    {
-      id: "kid1",
-      name: "Kid 1",
-      amount: 50000,
-      startAge: 31,
-      endAge: 55,
-    },
-  ],
-  hasParentsCare: true,
-  parentsCareExpenses: [
-    {
-      id: "parent1",
-      name: "Parent 1",
-      amount: 50000,
-      startAge: 50,
-      endAge: 70,
-    },
-  ],
+  hasKidsExpenses: false,
+  kidsExpenses: [],
+  hasParentsCare: false,
+  parentsCareExpenses: [],
 };
 
 export default function FireCalculator() {
@@ -174,7 +158,12 @@ export default function FireCalculator() {
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold">FIRE Calculator</h1>
+        <div>
+          <h1 className="text-3xl font-bold">FreedomFIRE Calculator</h1>
+          <p className="text-gray-600 mt-1">
+            Plan Your Path to Financial Independence
+          </p>
+        </div>
         <button
           onClick={() => setIsImportExportOpen(true)}
           className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors"
