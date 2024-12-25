@@ -28,9 +28,14 @@ ChartJS.register(
 interface FireChartsProps {
   projections: YearlyProjection[];
   fireAge: number;
+  inflationRate: number; // Add inflation rate to show nominal values in tooltips
 }
 
-export default function FireCharts({ projections, fireAge }: FireChartsProps) {
+export default function FireCharts({
+  projections,
+  fireAge,
+  inflationRate,
+}: FireChartsProps) {
   // Format currency for tooltips and axes
   const formatCurrency = (value: number) => {
     if (Math.abs(value) >= 1000000) {
@@ -39,6 +44,12 @@ export default function FireCharts({ projections, fireAge }: FireChartsProps) {
       return `$${(value / 1000).toFixed(0)}K`;
     }
     return `$${value.toFixed(0)}`;
+  };
+
+  // Calculate nominal value for tooltip display
+  const getNominalValue = (realValue: number, year: number) => {
+    const years = year - projections[0].age;
+    return realValue * Math.pow(1 + inflationRate, years);
   };
 
   // Common chart options
@@ -54,10 +65,28 @@ export default function FireCharts({ projections, fireAge }: FireChartsProps) {
       },
       tooltip: {
         callbacks: {
+          title: (context) => {
+            const age = context[0].label;
+            const years = parseInt(age) - projections[0].age;
+            return `Age ${age} (${years} years from now)`;
+          },
           label: (context) => {
             const label = context.dataset.label || "";
-            const value = context.parsed.y;
-            return `${label}: ${formatCurrency(value)}`;
+            const realValue = context.parsed.y;
+            const age = parseInt(context.label);
+            const nominalValue = getNominalValue(realValue, age);
+
+            return [
+              `${label} (today's dollars): ${formatCurrency(realValue)}`,
+              `${label} (future dollars): ${formatCurrency(nominalValue)}`,
+            ];
+          },
+          footer: (context) => {
+            const age = parseInt(context[0].label);
+            const years = age - projections[0].age;
+            return `\nAll values adjusted for ${(inflationRate * 100).toFixed(
+              1
+            )}% annual inflation`;
           },
         },
       },
@@ -66,6 +95,16 @@ export default function FireCharts({ projections, fireAge }: FireChartsProps) {
       y: {
         ticks: {
           callback: (value) => formatCurrency(Number(value)),
+        },
+        title: {
+          display: true,
+          text: "Amount (in today's dollars)",
+        },
+      },
+      x: {
+        title: {
+          display: true,
+          text: "Age",
         },
       },
     },
@@ -92,7 +131,7 @@ export default function FireCharts({ projections, fireAge }: FireChartsProps) {
       ...commonOptions.plugins,
       title: {
         display: true,
-        text: "Net Worth Projection",
+        text: "Net Worth Projection (in today's dollars)",
       },
       annotation: {
         annotations: {
@@ -118,20 +157,13 @@ export default function FireCharts({ projections, fireAge }: FireChartsProps) {
     labels: projections.map((p) => p.age),
     datasets: [
       {
-        label: "Annual Income",
+        label: "Employment Income",
         data: projections.map((p) => p.annualIncome),
         borderColor: "rgb(34, 197, 94)", // green-600
         backgroundColor: "rgba(34, 197, 94, 0.1)",
         fill: true,
         tension: 0.4,
-      },
-      {
-        label: "Annual Expenses",
-        data: projections.map((p) => p.annualExpenses),
-        borderColor: "rgb(239, 68, 68)", // red-600
-        backgroundColor: "rgba(239, 68, 68, 0.1)",
-        fill: true,
-        tension: 0.4,
+        order: 1,
       },
       {
         label: "Investment Returns",
@@ -140,8 +172,72 @@ export default function FireCharts({ projections, fireAge }: FireChartsProps) {
         backgroundColor: "rgba(168, 85, 247, 0.1)",
         fill: true,
         tension: 0.4,
+        order: 2,
       },
-    ],
+      {
+        label: "Base Expenses",
+        data: projections.map((p) => p.baseExpenses),
+        borderColor: "rgb(239, 68, 68)", // red-600
+        backgroundColor: "rgba(239, 68, 68, 0.1)",
+        fill: true,
+        tension: 0.4,
+        order: 3,
+      },
+      {
+        label: "Kids Expenses",
+        data: projections.map((p) => p.kidsExpenses || 0),
+        borderColor: "rgb(245, 158, 11)", // amber-600
+        backgroundColor: "rgba(245, 158, 11, 0.1)",
+        fill: true,
+        tension: 0.4,
+        order: 4,
+      },
+      {
+        label: "Parents Care Expenses",
+        data: projections.map((p) => p.parentsCareExpenses || 0),
+        borderColor: "rgb(236, 72, 153)", // pink-600
+        backgroundColor: "rgba(236, 72, 153, 0.1)",
+        fill: true,
+        tension: 0.4,
+        order: 5,
+      },
+      {
+        label: "Additional Retirement Expenses",
+        data: projections.map((p) => p.additionalRetirementExpenses || 0),
+        borderColor: "rgb(124, 58, 237)", // violet-600
+        backgroundColor: "rgba(124, 58, 237, 0.1)",
+        fill: true,
+        tension: 0.4,
+        order: 6,
+      },
+      {
+        label: "Savings/Withdrawals",
+        data: projections.map((p) => p.savings),
+        borderColor: "rgb(59, 130, 246)", // blue-600
+        backgroundColor: "rgba(59, 130, 246, 0.1)",
+        fill: true,
+        tension: 0.4,
+        borderDash: [5, 5], // Dashed line for savings/withdrawals
+        order: 7,
+      },
+    ].filter((dataset) => {
+      // Only show expense types that have non-zero values
+      if (dataset.label === "Kids Expenses") {
+        return projections.some((p) => p.kidsExpenses && p.kidsExpenses > 0);
+      }
+      if (dataset.label === "Parents Care Expenses") {
+        return projections.some(
+          (p) => p.parentsCareExpenses && p.parentsCareExpenses > 0
+        );
+      }
+      if (dataset.label === "Additional Retirement Expenses") {
+        return projections.some(
+          (p) =>
+            p.additionalRetirementExpenses && p.additionalRetirementExpenses > 0
+        );
+      }
+      return true;
+    }),
   };
 
   const incomeExpensesOptions: ChartOptions<"line"> = {
@@ -150,7 +246,7 @@ export default function FireCharts({ projections, fireAge }: FireChartsProps) {
       ...commonOptions.plugins,
       title: {
         display: true,
-        text: "Income, Expenses & Investment Returns",
+        text: "Income, Expenses & Investment Returns (in today's dollars)",
       },
       annotation: {
         annotations: {
@@ -166,6 +262,14 @@ export default function FireCharts({ projections, fireAge }: FireChartsProps) {
               position: "start",
             },
           },
+          zeroLine: {
+            type: "line",
+            yMin: 0,
+            yMax: 0,
+            borderColor: "rgb(156, 163, 175)", // gray-400
+            borderWidth: 1,
+            borderDash: [2, 2],
+          },
         },
       },
     },
@@ -175,9 +279,17 @@ export default function FireCharts({ projections, fireAge }: FireChartsProps) {
     <div className="space-y-8">
       <div className="bg-white rounded-lg shadow-lg p-6">
         <Line options={netWorthOptions} data={netWorthData} />
+        <p className="text-sm text-gray-500 mt-2 text-center">
+          All values are adjusted for inflation and shown in today's dollars.
+          Hover over the chart to see future dollar amounts.
+        </p>
       </div>
       <div className="bg-white rounded-lg shadow-lg p-6">
         <Line options={incomeExpensesOptions} data={incomeExpensesData} />
+        <p className="text-sm text-gray-500 mt-2 text-center">
+          All values are adjusted for inflation and shown in today's dollars.
+          Hover over the chart to see future dollar amounts.
+        </p>
       </div>
     </div>
   );

@@ -36,6 +36,11 @@ export interface YearlyProjection {
   annualExpenses: number;
   annualIncome: number;
   investmentReturns: number;
+  savings: number; // Can be negative after retirement (drawing down from investments)
+  baseExpenses: number; // Base living expenses
+  kidsExpenses?: number; // Optional kids expenses
+  parentsCareExpenses?: number; // Optional parents care expenses
+  additionalRetirementExpenses?: number; // Optional additional retirement expenses
 }
 
 // Final calculation results

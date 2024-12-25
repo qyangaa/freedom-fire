@@ -6,7 +6,7 @@ import type {
 } from "../types/fire";
 
 // Convert today's value to nominal (future) value
-const toNominalValue = (
+export const toNominalValue = (
   todayValue: number,
   inflationRate: number,
   years: number
@@ -15,7 +15,7 @@ const toNominalValue = (
 };
 
 // Convert nominal (future) value to today's value
-const toTodayValue = (
+export const toTodayValue = (
   nominalValue: number,
   inflationRate: number,
   years: number
@@ -82,8 +82,14 @@ const calculateIncomeForAge = (
   targetAge: number,
   careerGrowthRate: number,
   slowdownAge: number,
-  inflationRate: number
+  inflationRate: number,
+  fireAge: number | null
 ): number => {
+  // If we've reached FIRE age, income drops to zero (retirement)
+  if (fireAge !== null && targetAge >= fireAge) {
+    return 0;
+  }
+
   const years = targetAge - currentAge;
   const yearsGrowing = Math.min(
     targetAge - currentAge,
@@ -113,6 +119,7 @@ export const calculateFireProjections = (
   let fireAge = inputs.currentAge;
   let nominalNetWorth = inputs.currentSavings;
   let foundFireAge = false;
+  let currentFireAge: number | null = null;
 
   // Calculate nominal investment return rate
   const nominalReturnRate = getNominalReturnRate(
@@ -131,11 +138,22 @@ export const calculateFireProjections = (
       age,
       inputs.careerGrowthRate,
       inputs.careerGrowthSlowdownAge,
-      inputs.inflationRate
+      inputs.inflationRate,
+      currentFireAge
     );
 
-    const nominalExpenses = calculateTotalExpensesForAge(
+    // Calculate base expenses
+    const nominalBaseExpenses = calculateTotalExpensesForAge(
       inputs.annualExpenses,
+      age,
+      inputs.currentAge,
+      inputs.inflationRate,
+      [] // No additional expenses here, we'll track them separately
+    );
+
+    // Calculate additional retirement expenses
+    const nominalRetirementExpenses = calculateTotalExpensesForAge(
+      0,
       age,
       inputs.currentAge,
       inputs.inflationRate,
@@ -164,17 +182,23 @@ export const calculateFireProjections = (
       : 0;
 
     const totalNominalExpenses =
-      nominalExpenses + nominalKidsExpenses + nominalParentsCareExpenses;
+      nominalBaseExpenses +
+      nominalRetirementExpenses +
+      nominalKidsExpenses +
+      nominalParentsCareExpenses;
 
     // Calculate investment returns in nominal terms
     const nominalInvestmentReturns = nominalNetWorth * nominalReturnRate;
 
-    // Calculate savings in nominal terms
-    const nominalSavings = calculateAnnualSavings(
-      nominalIncome,
-      totalNominalExpenses,
-      inputs.taxRate
-    );
+    // Calculate savings in nominal terms (only if not retired)
+    const nominalSavings =
+      currentFireAge === null
+        ? calculateAnnualSavings(
+            nominalIncome,
+            totalNominalExpenses,
+            inputs.taxRate
+          )
+        : -totalNominalExpenses; // After retirement, we're drawing down from investments
 
     // Update nominal net worth
     nominalNetWorth =
@@ -205,11 +229,29 @@ export const calculateFireProjections = (
       annualExpenses: realExpenses,
       annualIncome: realIncome,
       investmentReturns: realInvestmentReturns,
+      savings: toTodayValue(nominalSavings, inputs.inflationRate, years),
+      baseExpenses: toTodayValue(
+        nominalBaseExpenses,
+        inputs.inflationRate,
+        years
+      ),
+      additionalRetirementExpenses: toTodayValue(
+        nominalRetirementExpenses,
+        inputs.inflationRate,
+        years
+      ),
+      kidsExpenses: inputs.hasKidsExpenses
+        ? toTodayValue(nominalKidsExpenses, inputs.inflationRate, years)
+        : undefined,
+      parentsCareExpenses: inputs.hasParentsCare
+        ? toTodayValue(nominalParentsCareExpenses, inputs.inflationRate, years)
+        : undefined,
     });
 
     // Check if FIRE is achieved (using real values)
     if (!foundFireAge && realInvestmentReturns >= realExpenses * 1.1) {
       fireAge = age;
+      currentFireAge = age;
       foundFireAge = true;
     }
   }
