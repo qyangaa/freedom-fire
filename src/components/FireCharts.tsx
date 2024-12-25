@@ -81,9 +81,7 @@ export default function FireCharts({
               `${label} (future dollars): ${formatCurrency(nominalValue)}`,
             ];
           },
-          footer: (context) => {
-            const age = parseInt(context[0].label);
-            const years = age - projections[0].age;
+          footer: () => {
             return `\nAll values adjusted for ${(inflationRate * 100).toFixed(
               1
             )}% annual inflation`;
