@@ -18,34 +18,28 @@ interface FireFormProps {
   ) => void;
 }
 
+const toPercentage = (value: number) => Math.round(value * 100);
+const fromPercentage = (value: number) => value / 100;
+
 export default function FireForm({
   inputs,
   onInputChange,
   onAddExpense,
   onRemoveExpense,
 }: FireFormProps) {
-  const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const { name, value, type, checked } = e.target;
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value, type } = e.target;
+    let parsedValue: number | boolean = parseFloat(value);
 
     if (type === "checkbox") {
-      onInputChange(name as keyof ExtendedFireInputs, checked);
-      return;
+      parsedValue = (e.target as HTMLInputElement).checked;
+    } else if (name.includes("Rate")) {
+      // Convert percentage input to decimal
+      parsedValue = fromPercentage(parsedValue);
     }
 
-    let parsedValue: number;
-    if (type === "range") {
-      parsedValue = parseFloat(value) / 100;
-    } else {
-      parsedValue = parseFloat(value);
-    }
-
-    if (!isNaN(parsedValue)) {
-      onInputChange(name as keyof ExtendedFireInputs, parsedValue);
-    }
+    onInputChange(name as keyof ExtendedFireInputs, parsedValue);
   };
-
-  // Format decimal to percentage for display
-  const toPercentage = (value: number) => (value * 100).toFixed(1);
 
   const handleAddExpense = (type: "retirement" | "kids" | "parents") => {
     const newExpense: AdditionalExpense = {
@@ -58,7 +52,7 @@ export default function FireForm({
   };
 
   return (
-    <div className="space-y-6">
+    <form className="space-y-8" onSubmit={(e) => e.preventDefault()}>
       {/* Basic Information */}
       <div>
         <h2 className="text-xl font-semibold mb-4">Basic Information</h2>
@@ -67,7 +61,7 @@ export default function FireForm({
             <FormLabel
               htmlFor="currentAge"
               label="Current Age"
-              tooltip="Your current age in years"
+              tooltip="Your current age"
             />
             <input
               type="number"
@@ -76,7 +70,6 @@ export default function FireForm({
               value={inputs.currentAge}
               onChange={handleInputChange}
               min="0"
-              max="100"
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
@@ -87,10 +80,6 @@ export default function FireForm({
               label="Current Savings"
               tooltip="Your current total savings and investments"
               showTodaysDollar
-              futureValue={inputs.currentSavings}
-              inflationRate={inputs.inflationRate}
-              years={10}
-              showDetailedFutureValue
             />
             <input
               type="number"
@@ -152,101 +141,99 @@ export default function FireForm({
       {/* Rates and Projections */}
       <div>
         <h2 className="text-xl font-semibold mb-4">Rates and Projections</h2>
-        <div className="space-y-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <FormLabel
-              label="Investment Return Rate"
+              htmlFor="investmentReturn"
+              label="Investment Return Rate (%)"
               tooltip="Expected annual return on investments after inflation (real return)"
-            >
-              {toPercentage(inputs.investmentReturn)}%
-            </FormLabel>
+            />
             <input
-              type="range"
+              type="number"
+              id="investmentReturn"
               name="investmentReturn"
               value={toPercentage(inputs.investmentReturn)}
               onChange={handleInputChange}
-              min="0"
-              max="15"
+              min="-2"
+              max="12"
               step="0.1"
-              className="w-full"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
 
           <div>
             <FormLabel
-              label="Inflation Rate"
+              htmlFor="inflationRate"
+              label="Inflation Rate (%)"
               tooltip="Expected annual inflation rate"
-            >
-              {toPercentage(inputs.inflationRate)}%
-            </FormLabel>
+            />
             <input
-              type="range"
+              type="number"
+              id="inflationRate"
               name="inflationRate"
               value={toPercentage(inputs.inflationRate)}
               onChange={handleInputChange}
               min="0"
               max="10"
               step="0.1"
-              className="w-full"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
 
           <div>
             <FormLabel
-              label="Tax Rate"
-              tooltip="Your effective tax rate on income"
-            >
-              {toPercentage(inputs.taxRate)}%
-            </FormLabel>
+              htmlFor="taxRate"
+              label="Tax Rate (%)"
+              tooltip="Your effective tax rate"
+            />
             <input
-              type="range"
+              type="number"
+              id="taxRate"
               name="taxRate"
               value={toPercentage(inputs.taxRate)}
               onChange={handleInputChange}
               min="0"
               max="50"
               step="0.1"
-              className="w-full"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <FormLabel
-                label="Career Growth Rate"
-                tooltip="Expected annual income growth rate above inflation"
-              >
-                {toPercentage(inputs.careerGrowthRate)}%
-              </FormLabel>
-              <input
-                type="range"
-                name="careerGrowthRate"
-                value={toPercentage(inputs.careerGrowthRate)}
-                onChange={handleInputChange}
-                min="0"
-                max="10"
-                step="0.1"
-                className="w-full"
-              />
-            </div>
+          <div>
+            <FormLabel
+              htmlFor="careerGrowthRate"
+              label="Career Growth Rate (%)"
+              tooltip="Expected annual income growth rate above inflation"
+            />
+            <input
+              type="number"
+              id="careerGrowthRate"
+              name="careerGrowthRate"
+              value={toPercentage(inputs.careerGrowthRate)}
+              onChange={handleInputChange}
+              min="0"
+              max="15"
+              step="0.1"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
 
-            <div>
-              <FormLabel
-                htmlFor="careerGrowthSlowdownAge"
-                label="Growth Slowdown Age"
-                tooltip="Age at which career growth slows to match inflation"
-              />
-              <input
-                type="number"
-                id="careerGrowthSlowdownAge"
-                name="careerGrowthSlowdownAge"
-                value={inputs.careerGrowthSlowdownAge}
-                onChange={handleInputChange}
-                min={inputs.currentAge}
-                max="100"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
+          <div>
+            <FormLabel
+              htmlFor="careerGrowthSlowdownAge"
+              label="Career Growth Slowdown Age"
+              tooltip="Age at which your career growth starts to level off"
+            />
+            <input
+              type="number"
+              id="careerGrowthSlowdownAge"
+              name="careerGrowthSlowdownAge"
+              value={inputs.careerGrowthSlowdownAge}
+              onChange={handleInputChange}
+              min={inputs.currentAge + 1}
+              max="80"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
           </div>
         </div>
       </div>
@@ -639,6 +626,6 @@ export default function FireForm({
           )}
         </div>
       </div>
-    </div>
+    </form>
   );
 }
