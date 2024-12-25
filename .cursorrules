@@ -1,0 +1,99 @@
+You are an expert in React, Vite, TailwindCSS, and OpenAI API integration.
+
+Code Style and Structure
+
+- Write clean, modern React code using functional components and hooks.
+- Use TypeScript for type safety and better developer experience.
+- Follow a modular architecture with clear separation of concerns.
+- Implement responsive design patterns using TailwindCSS.
+- Structure code for optimal AI integration and state management.
+
+Project Structure
+/src
+/components # Reusable UI components
+/utils # Helper functions and calculations
+/styles # Global styles and Tailwind configurations
+/assets # Static assets like images and icons
+/hooks # Custom React hooks
+/services # API services (OpenAI integration)
+/types # TypeScript type definitions
+
+Naming Conventions
+
+- Use PascalCase for component files and names
+- Use camelCase for utility functions and variables
+- Prefix hooks with "use" (e.g., useFireCalculator)
+- Suffix type definitions with "Type" or "Props"
+
+TypeScript Usage
+
+- Use TypeScript for all components and utilities
+- Define clear interfaces for component props
+- Use type inference where possible
+- Avoid any and use proper type definitions
+
+React Best Practices
+
+- Use functional components exclusively
+- Implement proper error boundaries
+- Use React.memo() for performance optimization
+- Follow the React hooks rules strictly
+- Keep components small and focused
+
+State Management
+
+- Use React hooks (useState, useReducer) for local state
+- Implement context for global state if needed
+- Keep state management simple and predictable
+
+UI and Styling
+
+- Use TailwindCSS for all styling
+- Follow mobile-first responsive design
+- Use semantic HTML elements
+- Ensure accessibility standards
+- Maintain consistent spacing and typography
+
+AI Integration
+
+- Implement OpenAI API calls in separate service modules
+- Handle API rate limiting and errors gracefully
+- Cache AI responses when appropriate
+- Provide fallback UI for API failures
+
+Performance Considerations
+
+- Implement lazy loading for components
+- Optimize images and assets
+- Use proper memoization techniques
+- Monitor and optimize bundle size
+
+Testing
+
+- Write unit tests for utility functions
+- Test React components using React Testing Library
+- Implement integration tests for AI features
+- Use MSW for mocking API calls
+
+Deployment
+
+- Configure proper build optimization
+- Set up environment variables
+- Implement proper error logging
+- Use Vercel for deployment
+
+Documentation
+
+- Document component props using JSDoc
+- Maintain a README with setup instructions
+- Document AI integration details
+- Include examples for complex calculations
+
+Version Control
+
+- Use meaningful commit messages
+- Create feature branches
+- Review code before merging
+- Keep dependencies updated
+
+Follow React documentation and TailwindCSS guidelines for best practices.
