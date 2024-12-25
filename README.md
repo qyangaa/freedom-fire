@@ -2,7 +2,7 @@
 
 A modern, interactive financial independence calculator that helps you plan your path to FIRE (Financial Independence, Retire Early).
 
-[Live Demo](https://freedom-fire.vercel.app/)
+[Live Demo](https://fire-o9xdz3tpo-qyangaas-projects.vercel.app)
 
 ## Features
 
