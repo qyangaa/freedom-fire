@@ -6,6 +6,7 @@ import type {
 } from "../types/fire";
 import { calculateFireProjections } from "../utils/fireCalculations";
 import FireForm from "./FireForm";
+import FireCharts from "./FireCharts";
 
 const defaultInputs: ExtendedFireInputs = {
   // Basic inputs
@@ -173,44 +174,55 @@ export default function FireCalculator() {
         </div>
 
         {results && (
-          <div className="mt-8 bg-white rounded-lg shadow-lg p-6">
-            <h2 className="text-2xl font-bold mb-4">Results</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <h3 className="text-lg font-semibold mb-2">FIRE Age</h3>
-                <p className="text-3xl text-blue-600">{results.fireAge}</p>
-                <p className="text-gray-600">
-                  Years to FIRE: {results.yearsToFire}
-                </p>
-              </div>
-              <div>
-                <h3 className="text-lg font-semibold mb-2">Final Net Worth</h3>
-                <p className="text-3xl text-blue-600">
-                  ${Math.round(results.finalNetWorth).toLocaleString()}
-                </p>
-              </div>
-              <div>
-                <h3 className="text-lg font-semibold mb-2">
-                  Annual Expenses at FIRE
-                </h3>
-                <p className="text-3xl text-blue-600">
-                  $
-                  {Math.round(
-                    results.projectedAnnualExpensesAtFire
-                  ).toLocaleString()}
-                </p>
-              </div>
-              <div>
-                <h3 className="text-lg font-semibold mb-2">
-                  Real Investment Return
-                </h3>
-                <p className="text-3xl text-blue-600">
-                  {(results.realInvestmentReturn * 100).toFixed(1)}%
-                </p>
-                <p className="text-gray-600">After inflation</p>
+          <>
+            <div className="mt-8 bg-white rounded-lg shadow-lg p-6">
+              <h2 className="text-2xl font-bold mb-4">Results</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <h3 className="text-lg font-semibold mb-2">FIRE Age</h3>
+                  <p className="text-3xl text-blue-600">{results.fireAge}</p>
+                  <p className="text-gray-600">
+                    Years to FIRE: {results.yearsToFire}
+                  </p>
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold mb-2">
+                    Final Net Worth
+                  </h3>
+                  <p className="text-3xl text-blue-600">
+                    ${Math.round(results.finalNetWorth).toLocaleString()}
+                  </p>
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold mb-2">
+                    Annual Expenses at FIRE
+                  </h3>
+                  <p className="text-3xl text-blue-600">
+                    $
+                    {Math.round(
+                      results.projectedAnnualExpensesAtFire
+                    ).toLocaleString()}
+                  </p>
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold mb-2">
+                    Real Investment Return
+                  </h3>
+                  <p className="text-3xl text-blue-600">
+                    {(results.realInvestmentReturn * 100).toFixed(1)}%
+                  </p>
+                  <p className="text-gray-600">After inflation</p>
+                </div>
               </div>
             </div>
-          </div>
+
+            <div className="mt-8">
+              <FireCharts
+                projections={results.yearlyProjections}
+                fireAge={results.fireAge}
+              />
+            </div>
+          </>
         )}
       </div>
     </div>
