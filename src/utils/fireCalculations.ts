@@ -185,9 +185,6 @@ const simulateRetirement = (
     inputs.inflationRate
   );
 
-  // Calculate required net worth at FIRE age
-  const requiredNetWorth = calculateRequiredNetWorth(inputs, fireAge);
-
   for (let age = inputs.currentAge; age <= endAge; age++) {
     const years = age - inputs.currentAge;
 

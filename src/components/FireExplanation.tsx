@@ -29,16 +29,6 @@ export default function FireExplanation({
 
   // Calculate some example values for different time periods
   const yearsToFire = results.fireAge - inputs.currentAge;
-  const nominalExpensesAtFire = toNominalValue(
-    inputs.annualExpenses,
-    inputs.inflationRate,
-    yearsToFire
-  );
-  const nominalNetWorthAtFire = toNominalValue(
-    fireProjection?.netWorth || 0,
-    inputs.inflationRate,
-    yearsToFire
-  );
 
   // Calculate required net worth based on maximum expenses
   const maxExpenses = Math.max(

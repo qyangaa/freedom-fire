@@ -48,8 +48,7 @@ export default function FireCharts({
 
   // Calculate nominal value for tooltip display
   const getNominalValue = (realValue: number, year: number) => {
-    const years = year - projections[0].age;
-    return realValue * Math.pow(1 + inflationRate, years);
+    return realValue * Math.pow(1 + inflationRate, year - projections[0].age);
   };
 
   // Common chart options

@@ -73,14 +73,14 @@ export default function FireCalculator() {
   ) => {
     setInputs((prev) => {
       const expenses = {
-        retirement: "additionalRetirementExpenses",
-        kids: "kidsExpenses",
-        parents: "parentsCareExpenses",
+        retirement: "additionalRetirementExpenses" as const,
+        kids: "kidsExpenses" as const,
+        parents: "parentsCareExpenses" as const,
       };
       const key = expenses[type];
       const currentExpenses = prev[key] || [];
       const expenseIndex = currentExpenses.findIndex(
-        (e) => e.id === expense.id
+        (e: AdditionalExpense) => e.id === expense.id
       );
 
       if (expenseIndex === -1) {
@@ -110,16 +110,18 @@ export default function FireCalculator() {
   ) => {
     setInputs((prev) => {
       const expenses = {
-        retirement: "additionalRetirementExpenses",
-        kids: "kidsExpenses",
-        parents: "parentsCareExpenses",
+        retirement: "additionalRetirementExpenses" as const,
+        kids: "kidsExpenses" as const,
+        parents: "parentsCareExpenses" as const,
       };
       const key = expenses[type];
       const currentExpenses = prev[key] || [];
 
       return {
         ...prev,
-        [key]: currentExpenses.filter((expense) => expense.id !== id),
+        [key]: currentExpenses.filter(
+          (expense: AdditionalExpense) => expense.id !== id
+        ),
       };
     });
     // Clear previous results when expenses change

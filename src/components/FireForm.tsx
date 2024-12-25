@@ -1,4 +1,3 @@
-import { ChangeEvent } from "react";
 import type { ExtendedFireInputs, AdditionalExpense } from "../types/fire";
 import FormLabel from "./FormLabel";
 
