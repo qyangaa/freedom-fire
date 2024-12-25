@@ -76,6 +76,38 @@ export default function FireSummaryExport({
     },
     plugins: {
       ...options.plugins,
+      annotation: {
+        annotations: {
+          fireAge: {
+            type: "line",
+            xMin: (incomeExpensesData.labels || []).findIndex(
+              (age) => Number(age) === results.fireAge
+            ),
+            xMax: (incomeExpensesData.labels || []).findIndex(
+              (age) => Number(age) === results.fireAge
+            ),
+            borderColor: "rgb(34, 197, 94)", // green-600
+            borderWidth: 2,
+            label: {
+              display: true,
+              content: "FIRE Age",
+              position: "start",
+            },
+          },
+          ...((options.plugins?.annotation as any)?.annotations?.zeroLine
+            ? {
+                zeroLine: {
+                  type: "line",
+                  yMin: 0,
+                  yMax: 0,
+                  borderColor: "rgb(156, 163, 175)", // gray-400
+                  borderWidth: 1,
+                  borderDash: [2, 2],
+                },
+              }
+            : {}),
+        },
+      },
       legend: {
         ...options.plugins?.legend,
         position: "bottom" as const,

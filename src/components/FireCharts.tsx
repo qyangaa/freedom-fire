@@ -141,8 +141,8 @@ export default function FireCharts({
         annotations: {
           fireAge: {
             type: "line",
-            xMin: fireAge,
-            xMax: fireAge,
+            xMin: projections.findIndex((p) => p.age === fireAge),
+            xMax: projections.findIndex((p) => p.age === fireAge),
             borderColor: "rgb(34, 197, 94)", // green-600
             borderWidth: 2,
             label: {
@@ -256,8 +256,8 @@ export default function FireCharts({
         annotations: {
           fireAge: {
             type: "line",
-            xMin: fireAge,
-            xMax: fireAge,
+            xMin: projections.findIndex((p) => p.age === fireAge),
+            xMax: projections.findIndex((p) => p.age === fireAge),
             borderColor: "rgb(34, 197, 94)", // green-600
             borderWidth: 2,
             label: {
