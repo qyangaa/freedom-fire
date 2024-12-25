@@ -1,5 +1,6 @@
 import { ChangeEvent } from "react";
 import type { ExtendedFireInputs, AdditionalExpense } from "../types/fire";
+import FormLabel from "./FormLabel";
 
 interface FireFormProps {
   inputs: ExtendedFireInputs;
@@ -63,12 +64,11 @@ export default function FireForm({
         <h2 className="text-xl font-semibold mb-4">Basic Information</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label
+            <FormLabel
               htmlFor="currentAge"
-              className="block text-sm font-medium text-gray-700 mb-1"
-            >
-              Current Age
-            </label>
+              label="Current Age"
+              tooltip="Your current age in years"
+            />
             <input
               type="number"
               id="currentAge"
@@ -82,12 +82,12 @@ export default function FireForm({
           </div>
 
           <div>
-            <label
+            <FormLabel
               htmlFor="currentSavings"
-              className="block text-sm font-medium text-gray-700 mb-1"
-            >
-              Current Savings ($)
-            </label>
+              label="Current Savings"
+              tooltip="Your current total savings and investments"
+              showTodaysDollar
+            />
             <input
               type="number"
               id="currentSavings"
@@ -100,12 +100,15 @@ export default function FireForm({
           </div>
 
           <div>
-            <label
+            <FormLabel
               htmlFor="annualIncome"
-              className="block text-sm font-medium text-gray-700 mb-1"
-            >
-              Annual Income ($)
-            </label>
+              label="Annual Income"
+              tooltip="Your total annual income before taxes"
+              showTodaysDollar
+              futureValue={inputs.annualIncome}
+              inflationRate={inputs.inflationRate}
+              years={10}
+            />
             <input
               type="number"
               id="annualIncome"
@@ -118,12 +121,15 @@ export default function FireForm({
           </div>
 
           <div>
-            <label
+            <FormLabel
               htmlFor="annualExpenses"
-              className="block text-sm font-medium text-gray-700 mb-1"
-            >
-              Annual Expenses ($)
-            </label>
+              label="Annual Expenses"
+              tooltip="Your total annual living expenses"
+              showTodaysDollar
+              futureValue={inputs.annualExpenses}
+              inflationRate={inputs.inflationRate}
+              years={10}
+            />
             <input
               type="number"
               id="annualExpenses"
@@ -142,9 +148,12 @@ export default function FireForm({
         <h2 className="text-xl font-semibold mb-4">Rates and Projections</h2>
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Investment Return Rate ({toPercentage(inputs.investmentReturn)}%)
-            </label>
+            <FormLabel
+              label="Investment Return Rate"
+              tooltip="Expected annual return on investments after inflation (real return)"
+            >
+              {toPercentage(inputs.investmentReturn)}%
+            </FormLabel>
             <input
               type="range"
               name="investmentReturn"
@@ -158,9 +167,12 @@ export default function FireForm({
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Inflation Rate ({toPercentage(inputs.inflationRate)}%)
-            </label>
+            <FormLabel
+              label="Inflation Rate"
+              tooltip="Expected annual inflation rate"
+            >
+              {toPercentage(inputs.inflationRate)}%
+            </FormLabel>
             <input
               type="range"
               name="inflationRate"
@@ -174,9 +186,12 @@ export default function FireForm({
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Tax Rate ({toPercentage(inputs.taxRate)}%)
-            </label>
+            <FormLabel
+              label="Tax Rate"
+              tooltip="Your effective tax rate on income"
+            >
+              {toPercentage(inputs.taxRate)}%
+            </FormLabel>
             <input
               type="range"
               name="taxRate"
@@ -191,9 +206,12 @@ export default function FireForm({
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Career Growth Rate ({toPercentage(inputs.careerGrowthRate)}%)
-              </label>
+              <FormLabel
+                label="Career Growth Rate"
+                tooltip="Expected annual income growth rate above inflation"
+              >
+                {toPercentage(inputs.careerGrowthRate)}%
+              </FormLabel>
               <input
                 type="range"
                 name="careerGrowthRate"
@@ -207,12 +225,11 @@ export default function FireForm({
             </div>
 
             <div>
-              <label
+              <FormLabel
                 htmlFor="careerGrowthSlowdownAge"
-                className="block text-sm font-medium text-gray-700 mb-1"
-              >
-                Growth Slowdown Age
-              </label>
+                label="Growth Slowdown Age"
+                tooltip="Age at which career growth slows to match inflation"
+              />
               <input
                 type="number"
                 id="careerGrowthSlowdownAge"
@@ -235,7 +252,10 @@ export default function FireForm({
         {/* Retirement Expenses */}
         <div className="mb-6">
           <div className="flex justify-between items-center mb-4">
-            <h3 className="text-lg font-medium">Retirement Expenses</h3>
+            <FormLabel
+              label="Retirement Expenses"
+              tooltip="Additional expenses you expect in retirement"
+            />
             <button
               type="button"
               onClick={() => handleAddExpense("retirement")}
@@ -249,9 +269,7 @@ export default function FireForm({
             <div key={expense.id} className="bg-gray-50 p-4 rounded-md mb-3">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Expense Name
-                  </label>
+                  <FormLabel label="Expense Name" />
                   <input
                     type="text"
                     value={expense.name}
@@ -266,9 +284,17 @@ export default function FireForm({
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Amount ($)
-                  </label>
+                  <FormLabel
+                    label="Amount"
+                    showTodaysDollar
+                    futureValue={expense.amount}
+                    inflationRate={inputs.inflationRate}
+                    years={
+                      expense.startAge
+                        ? expense.startAge - inputs.currentAge
+                        : 0
+                    }
+                  />
                   <input
                     type="number"
                     value={expense.amount}
@@ -284,9 +310,10 @@ export default function FireForm({
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Start Age
-                  </label>
+                  <FormLabel
+                    label="Start Age"
+                    tooltip="Age when this expense starts"
+                  />
                   <input
                     type="number"
                     value={expense.startAge}
@@ -303,9 +330,10 @@ export default function FireForm({
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    End Age (Optional)
-                  </label>
+                  <FormLabel
+                    label="End Age"
+                    tooltip="Optional: Age when this expense ends"
+                  />
                   <input
                     type="number"
                     value={expense.endAge || ""}
@@ -345,18 +373,18 @@ export default function FireForm({
               onChange={handleInputChange}
               className="h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
             />
-            <label
+            <FormLabel
               htmlFor="hasKidsExpenses"
-              className="ml-2 text-lg font-medium"
-            >
-              Include Kids Expenses
-            </label>
+              label="Include Kids Expenses"
+              tooltip="Add expenses for children's needs and education"
+              className="ml-2 text-lg !mb-0"
+            />
           </div>
 
           {inputs.hasKidsExpenses && (
             <div className="pl-6">
               <div className="flex justify-between items-center mb-4">
-                <h3 className="text-lg font-medium">Kids Expenses</h3>
+                <FormLabel label="Kids Expenses" />
                 <button
                   type="button"
                   onClick={() => handleAddExpense("kids")}
@@ -371,12 +399,9 @@ export default function FireForm({
                   key={expense.id}
                   className="bg-gray-50 p-4 rounded-md mb-3"
                 >
-                  {/* Similar fields as retirement expenses */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Kid's Name
-                      </label>
+                      <FormLabel label="Kid's Name" />
                       <input
                         type="text"
                         value={expense.name}
@@ -391,9 +416,17 @@ export default function FireForm({
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Annual Expenses ($)
-                      </label>
+                      <FormLabel
+                        label="Annual Expenses"
+                        showTodaysDollar
+                        futureValue={expense.amount}
+                        inflationRate={inputs.inflationRate}
+                        years={
+                          expense.startAge
+                            ? expense.startAge - inputs.currentAge
+                            : 0
+                        }
+                      />
                       <input
                         type="number"
                         value={expense.amount}
@@ -409,9 +442,10 @@ export default function FireForm({
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Start Age (Your Age)
-                      </label>
+                      <FormLabel
+                        label="Start Age (Your Age)"
+                        tooltip="Your age when these expenses start"
+                      />
                       <input
                         type="number"
                         value={expense.startAge}
@@ -428,9 +462,10 @@ export default function FireForm({
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        End Age (Your Age)
-                      </label>
+                      <FormLabel
+                        label="End Age (Your Age)"
+                        tooltip="Your age when these expenses end"
+                      />
                       <input
                         type="number"
                         value={expense.endAge || ""}
@@ -472,18 +507,18 @@ export default function FireForm({
               onChange={handleInputChange}
               className="h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
             />
-            <label
+            <FormLabel
               htmlFor="hasParentsCare"
-              className="ml-2 text-lg font-medium"
-            >
-              Include Parents Care Expenses
-            </label>
+              label="Include Parents Care Expenses"
+              tooltip="Add expenses for parents' care and support"
+              className="ml-2 text-lg !mb-0"
+            />
           </div>
 
           {inputs.hasParentsCare && (
             <div className="pl-6">
               <div className="flex justify-between items-center mb-4">
-                <h3 className="text-lg font-medium">Parents Care Expenses</h3>
+                <FormLabel label="Parents Care Expenses" />
                 <button
                   type="button"
                   onClick={() => handleAddExpense("parents")}
@@ -498,12 +533,9 @@ export default function FireForm({
                   key={expense.id}
                   className="bg-gray-50 p-4 rounded-md mb-3"
                 >
-                  {/* Similar fields as retirement expenses */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Parent's Name
-                      </label>
+                      <FormLabel label="Parent's Name" />
                       <input
                         type="text"
                         value={expense.name}
@@ -518,9 +550,17 @@ export default function FireForm({
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Annual Care Expenses ($)
-                      </label>
+                      <FormLabel
+                        label="Annual Care Expenses"
+                        showTodaysDollar
+                        futureValue={expense.amount}
+                        inflationRate={inputs.inflationRate}
+                        years={
+                          expense.startAge
+                            ? expense.startAge - inputs.currentAge
+                            : 0
+                        }
+                      />
                       <input
                         type="number"
                         value={expense.amount}
@@ -536,9 +576,10 @@ export default function FireForm({
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Start Age (Your Age)
-                      </label>
+                      <FormLabel
+                        label="Start Age (Your Age)"
+                        tooltip="Your age when these expenses start"
+                      />
                       <input
                         type="number"
                         value={expense.startAge}
@@ -555,9 +596,10 @@ export default function FireForm({
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        End Age (Your Age)
-                      </label>
+                      <FormLabel
+                        label="End Age (Your Age)"
+                        tooltip="Your age when these expenses end"
+                      />
                       <input
                         type="number"
                         value={expense.endAge || ""}
