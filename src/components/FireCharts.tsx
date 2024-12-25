@@ -12,6 +12,8 @@ import {
 import annotationPlugin from "chartjs-plugin-annotation";
 import { Line } from "react-chartjs-2";
 import type { YearlyProjection } from "../types/fire";
+import type { ExtendedFireInputs, FireResults } from "../types/fire";
+import FireSummaryExport from "./FireSummaryExport";
 
 // Register ChartJS components
 ChartJS.register(
@@ -28,13 +30,17 @@ ChartJS.register(
 interface FireChartsProps {
   projections: YearlyProjection[];
   fireAge: number;
-  inflationRate: number; // Add inflation rate to show nominal values in tooltips
+  inflationRate: number;
+  inputs: ExtendedFireInputs;
+  results: FireResults;
 }
 
 export default function FireCharts({
   projections,
   fireAge,
   inflationRate,
+  inputs,
+  results,
 }: FireChartsProps) {
   // Format currency for tooltips and axes
   const formatCurrency = (value: number) => {
@@ -288,6 +294,17 @@ export default function FireCharts({
           All values are adjusted for inflation and shown in today's dollars.
           Hover over the chart to see future dollar amounts.
         </p>
+      </div>
+      <div className="bg-white rounded-lg shadow-lg p-6">
+        <h2 className="text-xl font-semibold mb-4">Export Summary</h2>
+        <FireSummaryExport
+          inputs={inputs}
+          results={results}
+          netWorthData={netWorthData}
+          netWorthOptions={netWorthOptions}
+          incomeExpensesData={incomeExpensesData}
+          incomeExpensesOptions={incomeExpensesOptions}
+        />
       </div>
     </div>
   );

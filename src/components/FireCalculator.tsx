@@ -257,6 +257,8 @@ export default function FireCalculator() {
                 projections={results.yearlyProjections}
                 fireAge={results.fireAge}
                 inflationRate={inputs.inflationRate}
+                inputs={inputs}
+                results={results}
               />
             </div>
 
