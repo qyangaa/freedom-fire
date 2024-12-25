@@ -7,25 +7,42 @@ import type {
 import { calculateFireProjections } from "../utils/fireCalculations";
 import FireForm from "./FireForm";
 import FireCharts from "./FireCharts";
+import FireExplanation from "./FireExplanation";
 
 const defaultInputs: ExtendedFireInputs = {
   // Basic inputs
-  currentAge: 25,
-  currentSavings: 10000,
-  annualIncome: 60000,
+  currentAge: 31,
+  currentSavings: 800000,
+  annualIncome: 300000,
   annualExpenses: 40000,
-  investmentReturn: 0.07,
-  inflationRate: 0.03,
-  taxRate: 0.25,
+  investmentReturn: 0.04,
+  inflationRate: 0.02,
+  taxRate: 0.35,
   careerGrowthRate: 0.03,
   careerGrowthSlowdownAge: 45,
 
   // Additional expenses
   additionalRetirementExpenses: [],
-  hasKidsExpenses: false,
-  kidsExpenses: [],
-  hasParentsCare: false,
-  parentsCareExpenses: [],
+  hasKidsExpenses: true,
+  kidsExpenses: [
+    {
+      id: "kid1",
+      name: "Kid 1",
+      amount: 50000,
+      startAge: 31,
+      endAge: 55,
+    },
+  ],
+  hasParentsCare: true,
+  parentsCareExpenses: [
+    {
+      id: "parent1",
+      name: "Parent 1",
+      amount: 50000,
+      startAge: 50,
+      endAge: 70,
+    },
+  ],
 };
 
 export default function FireCalculator() {
@@ -220,7 +237,12 @@ export default function FireCalculator() {
               <FireCharts
                 projections={results.yearlyProjections}
                 fireAge={results.fireAge}
+                inflationRate={inputs.inflationRate}
               />
+            </div>
+
+            <div className="mt-8">
+              <FireExplanation inputs={inputs} results={results} />
             </div>
           </>
         )}

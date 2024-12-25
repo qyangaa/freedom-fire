@@ -1,5 +1,5 @@
 import type { ExtendedFireInputs, FireResults } from "../types/fire";
-import { toNominalValue, toTodayValue } from "../utils/fireCalculations";
+import { toNominalValue } from "../utils/fireCalculations";
 
 interface FireExplanationProps {
   inputs: ExtendedFireInputs;
@@ -40,6 +40,14 @@ export default function FireExplanation({
     yearsToFire
   );
 
+  // Calculate required net worth based on maximum expenses
+  const maxExpenses = Math.max(
+    inputs.annualExpenses,
+    ...(inputs.kidsExpenses?.map((e) => e.amount) || []),
+    ...(inputs.parentsCareExpenses?.map((e) => e.amount) || [])
+  );
+  const requiredNetWorth = (maxExpenses / inputs.investmentReturn) * 1.2;
+
   return (
     <div className="bg-white rounded-lg shadow-lg p-6">
       <h2 className="text-2xl font-bold mb-6">How the Numbers Work</h2>
@@ -54,7 +62,9 @@ export default function FireExplanation({
             <p>• Annual Income: {formatCurrency(inputs.annualIncome)}</p>
             <p>• Annual Expenses: {formatCurrency(inputs.annualExpenses)}</p>
             <p className="text-sm text-gray-600 mt-2">
-              These are your baseline numbers in today's dollars.
+              These are your baseline numbers in today's dollars. All future
+              projections are adjusted for inflation to maintain purchasing
+              power.
             </p>
           </div>
         </section>
@@ -85,33 +95,21 @@ export default function FireExplanation({
 
         {/* FIRE Age Calculation */}
         <section>
-          <h3 className="text-xl font-semibold mb-3">3. Your FIRE Numbers</h3>
+          <h3 className="text-xl font-semibold mb-3">
+            3. Net Worth Preservation Strategy
+          </h3>
           <div className="pl-4 space-y-2">
-            <p>• Years until FIRE: {yearsToFire}</p>
             <p>• FIRE Age: {results.fireAge}</p>
-            <p>• Annual Expenses at FIRE:</p>
-            <div className="pl-4">
-              <p>
-                - In today's dollars:{" "}
-                {formatCurrency(results.projectedAnnualExpensesAtFire)}
-              </p>
-              <p>
-                - In future dollars: {formatCurrency(nominalExpensesAtFire)}
-              </p>
-            </div>
-            <p>• Required Net Worth at FIRE:</p>
-            <div className="pl-4">
-              <p>
-                - In today's dollars:{" "}
-                {formatCurrency(fireProjection?.netWorth || 0)}
-              </p>
-              <p>
-                - In future dollars: {formatCurrency(nominalNetWorthAtFire)}
-              </p>
-            </div>
+            <p>• Years until FIRE: {yearsToFire}</p>
+            <p>
+              • Required Net Worth at FIRE: {formatCurrency(requiredNetWorth)}
+            </p>
+            <p>• Maximum Annual Expenses: {formatCurrency(maxExpenses)}</p>
             <p className="text-sm text-gray-600 mt-2">
-              FIRE is achieved when your investment returns can cover your
-              annual expenses with a 10% safety margin.
+              Your FIRE age is determined by when your net worth can generate
+              sufficient investment returns to cover all expenses while
+              preserving or growing your wealth in real terms. We require a 20%
+              safety margin above the minimum required net worth.
             </p>
           </div>
         </section>
@@ -123,55 +121,55 @@ export default function FireExplanation({
           </h3>
           <div className="pl-4 space-y-3">
             <p>
-              1. <strong>Expense Growth:</strong> Your annual expenses of{" "}
-              {formatCurrency(inputs.annualExpenses)} grow with inflation at{" "}
-              {formatPercentage(inputs.inflationRate)} per year.
-            </p>
-
-            <p>
-              2. <strong>Investment Returns:</strong> Your investments grow at a
-              real rate of {formatPercentage(inputs.investmentReturn)} after
-              inflation. The nominal rate is{" "}
-              {formatPercentage(
-                (1 + inputs.investmentReturn) * (1 + inputs.inflationRate) - 1
-              )}
-              .
-            </p>
-
-            <p>
-              3. <strong>Income Growth:</strong> Your income of{" "}
-              {formatCurrency(inputs.annualIncome)}:
+              1. <strong>Required Net Worth:</strong> We calculate the minimum
+              net worth needed as:
             </p>
             <div className="pl-4">
               <p>
-                - Grows at {formatPercentage(inputs.careerGrowthRate)} plus
-                inflation until age {inputs.careerGrowthSlowdownAge}
+                Maximum Annual Expenses ÷ Investment Return Rate × 1.2 (safety
+                margin)
               </p>
               <p>
-                - After that, grows only with inflation to maintain purchasing
-                power
+                {formatCurrency(maxExpenses)} ÷{" "}
+                {formatPercentage(inputs.investmentReturn)} × 1.2 ={" "}
+                {formatCurrency(requiredNetWorth)}
               </p>
             </div>
 
             <p>
-              4. <strong>Savings Rate:</strong> Each year, we calculate:
+              2. <strong>Investment Returns:</strong> At{" "}
+              {formatPercentage(inputs.investmentReturn)} real return, this
+              generates:
             </p>
             <div className="pl-4">
               <p>
-                - After-tax income: Income × (1 -{" "}
-                {formatPercentage(inputs.taxRate)})
+                {formatCurrency(requiredNetWorth)} ×{" "}
+                {formatPercentage(inputs.investmentReturn)} ={" "}
+                {formatCurrency(requiredNetWorth * inputs.investmentReturn)} per
+                year
               </p>
-              <p>- Annual savings: After-tax income - Annual expenses</p>
-              <p>- These savings are added to your investments</p>
             </div>
 
             <p>
-              5. <strong>FIRE Achievement:</strong> You reach FIRE when:
+              3. <strong>Sustainability Rules:</strong>
             </p>
             <div className="pl-4">
-              <p>- Annual investment returns ≥ Annual expenses × 1.1</p>
-              <p>- The 1.1 multiplier adds a 10% safety margin</p>
-              <p>- All comparisons are made in real (today's) dollars</p>
+              <p>• Net worth must never decrease in real terms</p>
+              <p>• Live only off investment returns, preserving principal</p>
+              <p>• Maintain buffer for expense spikes (kids, parents care)</p>
+              <p>• All values maintained in real (today's) dollars</p>
+            </div>
+
+            <p>
+              4. <strong>FIRE Achievement:</strong> You reach FIRE when:
+            </p>
+            <div className="pl-4">
+              <p>• Your net worth exceeds the required amount</p>
+              <p>
+                • Investment returns can cover all future expenses without
+                touching principal
+              </p>
+              <p>• Net worth remains stable or growing in real terms</p>
             </div>
           </div>
         </section>
@@ -193,8 +191,7 @@ export default function FireExplanation({
                   <ul className="list-disc pl-6">
                     {inputs.additionalRetirementExpenses.map((expense) => (
                       <li key={expense.id}>
-                        {expense.name}: {formatCurrency(expense.amount)} per
-                        year
+                        {formatCurrency(expense.amount)} per year
                         {expense.startAge &&
                           ` starting at age ${expense.startAge}`}
                         {expense.endAge && ` until age ${expense.endAge}`}
@@ -212,8 +209,7 @@ export default function FireExplanation({
                   <ul className="list-disc pl-6">
                     {inputs.kidsExpenses.map((expense) => (
                       <li key={expense.id}>
-                        {expense.name}: {formatCurrency(expense.amount)} per
-                        year
+                        {formatCurrency(expense.amount)} per year
                         {expense.startAge &&
                           ` starting at age ${expense.startAge}`}
                         {expense.endAge && ` until age ${expense.endAge}`}
@@ -231,8 +227,7 @@ export default function FireExplanation({
                   <ul className="list-disc pl-6">
                     {inputs.parentsCareExpenses.map((expense) => (
                       <li key={expense.id}>
-                        {expense.name}: {formatCurrency(expense.amount)} per
-                        year
+                        {formatCurrency(expense.amount)} per year
                         {expense.startAge &&
                           ` starting at age ${expense.startAge}`}
                         {expense.endAge && ` until age ${expense.endAge}`}
@@ -243,8 +238,10 @@ export default function FireExplanation({
               )}
 
               <p className="text-sm text-gray-600">
-                All additional expenses are adjusted for inflation each year to
-                maintain purchasing power.
+                These additional expenses are factored into the required net
+                worth calculation. The FIRE age ensures your investment returns
+                can cover these expenses while maintaining your wealth in real
+                terms.
               </p>
             </div>
           </section>

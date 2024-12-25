@@ -1,8 +1,8 @@
 import Tooltip from "./Tooltip";
 
 interface FormLabelProps {
-  htmlFor?: string;
   label: string;
+  htmlFor?: string;
   tooltip?: string;
   className?: string;
   showTodaysDollar?: boolean;
@@ -10,6 +10,7 @@ interface FormLabelProps {
   inflationRate?: number;
   years?: number;
   showDetailedFutureValue?: boolean;
+  children?: React.ReactNode;
 }
 
 export default function FormLabel({

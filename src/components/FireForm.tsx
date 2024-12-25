@@ -44,7 +44,10 @@ export default function FireForm({
   const handleAddExpense = (type: "retirement" | "kids" | "parents") => {
     const newExpense: AdditionalExpense = {
       id: crypto.randomUUID(),
-      name: "",
+      name:
+        type === "retirement"
+          ? ""
+          : `${type === "kids" ? "Child" : "Parent"} Expenses`,
       amount: 0,
       startAge: inputs.currentAge,
     };
@@ -395,21 +398,6 @@ export default function FireForm({
                 >
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <FormLabel label="Kid's Name" />
-                      <input
-                        type="text"
-                        value={expense.name}
-                        onChange={(e) => {
-                          const updatedExpense = {
-                            ...expense,
-                            name: e.target.value,
-                          };
-                          onAddExpense("kids", updatedExpense);
-                        }}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      />
-                    </div>
-                    <div>
                       <FormLabel
                         label="Annual Expenses"
                         showTodaysDollar
@@ -529,21 +517,6 @@ export default function FireForm({
                   className="bg-gray-50 p-4 rounded-md mb-3"
                 >
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <FormLabel label="Parent's Name" />
-                      <input
-                        type="text"
-                        value={expense.name}
-                        onChange={(e) => {
-                          const updatedExpense = {
-                            ...expense,
-                            name: e.target.value,
-                          };
-                          onAddExpense("parents", updatedExpense);
-                        }}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      />
-                    </div>
                     <div>
                       <FormLabel
                         label="Annual Care Expenses"

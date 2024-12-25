@@ -1,0 +1,161 @@
+# FIRE Calculator Business Logic
+
+## Current Implementation
+
+### Core Calculations (fireCalculations.ts)
+
+1. Inflation Handling
+
+   - All input values are in today's dollars
+   - All displayed results are in today's dollars (real values)
+   - Internal calculations handle nominal values with inflation adjustments
+   - Conversion formulas:
+     - Future nominal value = Today's value × (1 + inflationRate)^years
+     - Today's value = Future nominal value ÷ (1 + inflationRate)^years
+
+2. Total Expenses Calculation
+
+   - Base annual expenses (input in today's dollars)
+   - Additional expenses (input in today's dollars)
+   - For each projection year:
+     - Nominal expenses = Today's expenses × (1 + inflationRate)^years
+     - Display value converted back to today's dollars
+   - Categories:
+     - Basic living expenses (grows with general inflation)
+     - Additional retirement expenses (grows with general inflation)
+     - Kids expenses (grows with general inflation)
+     - Parents care expenses (grows with general inflation)
+
+3. Income Calculation
+
+   - Base annual income (input in today's dollars)
+   - Career growth phases:
+     - Growth phase: Real growth = (1 + careerGrowthRate) ÷ (1 + inflationRate) - 1
+     - Post-slowdown: Maintains purchasing power (grows with inflation)
+   - Display all income values in today's dollars
+   - Tax calculations use nominal values then convert back
+
+4. Investment Returns
+
+   - Input return rate is real (after inflation) return
+   - Internal calculations:
+     - Nominal return rate = (1 + realReturn) × (1 + inflationRate) - 1
+     - Apply nominal returns for actual growth
+     - Convert results back to today's dollars for display
+   - All projections show purchasing power in current terms
+
+5. FIRE Achievement Determination
+
+   - Previous (Simplified) Method:
+
+     - Compare real investment returns with real expenses
+     - FIRE achieved when: Real investment returns ≥ Real annual expenses × 1.1
+     - This method was insufficient as it didn't account for future expense changes
+
+   - New Method (Strict Net Worth Preservation):
+
+     1. For each potential FIRE age from current age to current age + 50:
+
+        - Run a full lifetime simulation (until age 90 or specified end age)
+        - Track net worth trajectory after retirement
+        - Account for all future expenses:
+          - Base retirement expenses
+          - Additional retirement expenses
+          - Kids expenses (if applicable)
+          - Parents care expenses (if applicable)
+        - Calculate required investment returns to maintain net worth:
+          - Required return = Total expenses / Current net worth
+          - Must be less than or equal to real investment return rate
+
+     2. FIRE Age Requirements:
+
+        - Net worth in today's dollars must never decrease after retirement
+        - Investment returns must fully cover all expenses without touching principal
+        - Must maintain sufficient buffer for expense spikes
+        - Formula: Required investment return rate = Annual expenses / Net worth ≤ Real return rate
+
+     3. Selection Criteria:
+
+        - Choose the earliest age where:
+          - Net worth is sufficient to generate required returns
+          - All future expense spikes (kids, parents) can be covered by returns alone
+          - Net worth in today's dollars remains stable or growing
+        - Safety margin: Add 20% buffer to required net worth
+
+     4. Implementation Strategy:
+        - Binary search for optimal FIRE age
+        - For each candidate age:
+          - Project all future expenses
+          - Calculate minimum required net worth:
+            Net worth ≥ max(yearly expenses) / real return rate × 1.2
+          - Simulate full retirement scenario
+          - Verify net worth stability in real terms
+        - Return earliest age that meets all criteria
+
+### Data Visualization (FireCharts.tsx)
+
+1. Net Worth Chart
+
+   - Y-axis: All values in today's dollars
+   - Shows real purchasing power over time
+   - Inflation-adjusted growth trajectory
+   - Should show stable or increasing trajectory after FIRE
+   - Highlight expense impact periods
+
+2. Income vs Expenses Chart
+   - All values displayed in today's dollars
+   - Shows real purchasing power of:
+     - Income (after inflation and career growth)
+     - Expenses (varying with life events)
+     - Investment returns (real returns)
+   - Investment returns must exceed expenses at all times after FIRE
+
+## Input Form Updates
+
+1. Form Labels
+
+   - Clearly indicate all inputs are in today's dollars
+   - Add tooltips explaining inflation adjustment
+   - Show equivalent future values on demand
+
+2. Results Display
+   - All monetary values shown in today's dollars
+   - Optional toggle to show nominal (future) values
+   - Clear labeling of real vs nominal values
+   - Show required vs actual investment returns
+
+## Validation Rules
+
+1. Input Validation
+
+   - Real return rates must be reasonable (-2% to +12%)
+   - Inflation rate range (0% to 10%)
+   - Career growth must be specified in real terms
+   - All monetary inputs must be in today's dollars
+
+2. Calculation Validation
+   - Verify inflation adjustments maintain purchasing power
+   - Ensure real returns properly account for inflation
+   - Validate all conversions between nominal and real values
+   - Verify net worth stability in real terms
+
+## Future Enhancements
+
+1. Inflation Modeling
+
+   - Allow different inflation rates for different expense categories
+   - Model inflation rate variability over time
+   - Add historical inflation data for reference
+
+2. Visualization Enhancements
+
+   - Add toggle between real and nominal values in charts
+   - Show inflation impact visualization
+   - Add purchasing power comparison tools
+   - Highlight sustainable withdrawal rates
+
+3. Advanced Features
+   - Monte Carlo simulation with varying inflation rates
+   - Historical inflation scenario analysis
+   - Regional cost of living adjustments
+   - Dynamic withdrawal rate optimization
