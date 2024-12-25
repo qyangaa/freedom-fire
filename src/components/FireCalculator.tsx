@@ -8,6 +8,7 @@ import { calculateFireProjections } from "../utils/fireCalculations";
 import FireForm from "./FireForm";
 import FireCharts from "./FireCharts";
 import FireExplanation from "./FireExplanation";
+import ImportExportModal from "./ImportExportModal";
 
 const defaultInputs: ExtendedFireInputs = {
   // Basic inputs
@@ -50,6 +51,7 @@ export default function FireCalculator() {
   const [results, setResults] = useState<FireResults | null>(null);
   const [isCalculating, setIsCalculating] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isImportExportOpen, setIsImportExportOpen] = useState(false);
 
   const handleInputChange = (
     name: keyof ExtendedFireInputs,
@@ -163,9 +165,24 @@ export default function FireCalculator() {
     }
   };
 
+  const handleImport = (newInputs: ExtendedFireInputs) => {
+    setInputs(newInputs);
+    setResults(null);
+    setError(null);
+  };
+
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold text-center mb-8">FIRE Calculator</h1>
+      <div className="flex justify-between items-center mb-8">
+        <h1 className="text-3xl font-bold">FIRE Calculator</h1>
+        <button
+          onClick={() => setIsImportExportOpen(true)}
+          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors"
+        >
+          Import/Export Data
+        </button>
+      </div>
+
       <div className="max-w-4xl mx-auto">
         <div className="bg-white rounded-lg shadow-lg p-6">
           <FireForm
@@ -249,6 +266,13 @@ export default function FireCalculator() {
           </>
         )}
       </div>
+
+      <ImportExportModal
+        isOpen={isImportExportOpen}
+        onClose={() => setIsImportExportOpen(false)}
+        onImport={handleImport}
+        currentInputs={inputs}
+      />
     </div>
   );
 }
