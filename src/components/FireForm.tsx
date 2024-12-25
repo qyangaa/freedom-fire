@@ -70,8 +70,14 @@ export default function FireForm({
               type="number"
               id="currentAge"
               name="currentAge"
-              value={inputs.currentAge}
-              onChange={handleInputChange}
+              value={inputs.currentAge === 0 ? "" : inputs.currentAge}
+              onChange={(e) => {
+                const value = e.target.value;
+                onInputChange(
+                  "currentAge",
+                  value === "" ? 0 : parseFloat(value)
+                );
+              }}
               min="0"
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
@@ -88,8 +94,14 @@ export default function FireForm({
               type="number"
               id="currentSavings"
               name="currentSavings"
-              value={inputs.currentSavings}
-              onChange={handleInputChange}
+              value={inputs.currentSavings === 0 ? "" : inputs.currentSavings}
+              onChange={(e) => {
+                const value = e.target.value;
+                onInputChange(
+                  "currentSavings",
+                  value === "" ? 0 : parseFloat(value)
+                );
+              }}
               min="0"
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
@@ -110,8 +122,14 @@ export default function FireForm({
               type="number"
               id="annualIncome"
               name="annualIncome"
-              value={inputs.annualIncome}
-              onChange={handleInputChange}
+              value={inputs.annualIncome === 0 ? "" : inputs.annualIncome}
+              onChange={(e) => {
+                const value = e.target.value;
+                onInputChange(
+                  "annualIncome",
+                  value === "" ? 0 : parseFloat(value)
+                );
+              }}
               min="0"
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
@@ -132,8 +150,14 @@ export default function FireForm({
               type="number"
               id="annualExpenses"
               name="annualExpenses"
-              value={inputs.annualExpenses}
-              onChange={handleInputChange}
+              value={inputs.annualExpenses === 0 ? "" : inputs.annualExpenses}
+              onChange={(e) => {
+                const value = e.target.value;
+                onInputChange(
+                  "annualExpenses",
+                  value === "" ? 0 : parseFloat(value)
+                );
+              }}
               min="0"
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
@@ -155,8 +179,17 @@ export default function FireForm({
               type="number"
               id="investmentReturn"
               name="investmentReturn"
-              value={toPercentage(inputs.investmentReturn)}
-              onChange={handleInputChange}
+              value={
+                inputs.investmentReturn === 0
+                  ? ""
+                  : toPercentage(inputs.investmentReturn)
+              }
+              onChange={(e) => {
+                const value = e.target.value;
+                const parsedValue =
+                  value === "" ? 0 : fromPercentage(parseFloat(value));
+                onInputChange("investmentReturn", parsedValue);
+              }}
               min="-2"
               max="12"
               step="0.1"
@@ -174,8 +207,17 @@ export default function FireForm({
               type="number"
               id="inflationRate"
               name="inflationRate"
-              value={toPercentage(inputs.inflationRate)}
-              onChange={handleInputChange}
+              value={
+                inputs.inflationRate === 0
+                  ? ""
+                  : toPercentage(inputs.inflationRate)
+              }
+              onChange={(e) => {
+                const value = e.target.value;
+                const parsedValue =
+                  value === "" ? 0 : fromPercentage(parseFloat(value));
+                onInputChange("inflationRate", parsedValue);
+              }}
               min="0"
               max="10"
               step="0.1"
@@ -193,8 +235,13 @@ export default function FireForm({
               type="number"
               id="taxRate"
               name="taxRate"
-              value={toPercentage(inputs.taxRate)}
-              onChange={handleInputChange}
+              value={inputs.taxRate === 0 ? "" : toPercentage(inputs.taxRate)}
+              onChange={(e) => {
+                const value = e.target.value;
+                const parsedValue =
+                  value === "" ? 0 : fromPercentage(parseFloat(value));
+                onInputChange("taxRate", parsedValue);
+              }}
               min="0"
               max="50"
               step="0.1"
@@ -212,8 +259,17 @@ export default function FireForm({
               type="number"
               id="careerGrowthRate"
               name="careerGrowthRate"
-              value={toPercentage(inputs.careerGrowthRate)}
-              onChange={handleInputChange}
+              value={
+                inputs.careerGrowthRate === 0
+                  ? ""
+                  : toPercentage(inputs.careerGrowthRate)
+              }
+              onChange={(e) => {
+                const value = e.target.value;
+                const parsedValue =
+                  value === "" ? 0 : fromPercentage(parseFloat(value));
+                onInputChange("careerGrowthRate", parsedValue);
+              }}
               min="0"
               max="15"
               step="0.1"
@@ -231,8 +287,18 @@ export default function FireForm({
               type="number"
               id="careerGrowthSlowdownAge"
               name="careerGrowthSlowdownAge"
-              value={inputs.careerGrowthSlowdownAge}
-              onChange={handleInputChange}
+              value={
+                inputs.careerGrowthSlowdownAge === 0
+                  ? ""
+                  : inputs.careerGrowthSlowdownAge
+              }
+              onChange={(e) => {
+                const value = e.target.value;
+                onInputChange(
+                  "careerGrowthSlowdownAge",
+                  value === "" ? 0 : parseFloat(value)
+                );
+              }}
               min={inputs.currentAge + 1}
               max="80"
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -294,11 +360,12 @@ export default function FireForm({
                   />
                   <input
                     type="number"
-                    value={expense.amount}
+                    value={expense.amount === 0 ? "" : expense.amount}
                     onChange={(e) => {
+                      const value = e.target.value;
                       const updatedExpense = {
                         ...expense,
-                        amount: parseFloat(e.target.value) || 0,
+                        amount: value === "" ? 0 : parseFloat(value),
                       };
                       onAddExpense("retirement", updatedExpense);
                     }}
@@ -313,12 +380,17 @@ export default function FireForm({
                   />
                   <input
                     type="number"
-                    value={expense.startAge}
+                    value={
+                      expense.startAge === inputs.currentAge
+                        ? ""
+                        : expense.startAge
+                    }
                     onChange={(e) => {
+                      const value = e.target.value;
                       const updatedExpense = {
                         ...expense,
                         startAge:
-                          parseFloat(e.target.value) || inputs.currentAge,
+                          value === "" ? inputs.currentAge : parseFloat(value),
                       };
                       onAddExpense("retirement", updatedExpense);
                     }}
@@ -412,11 +484,12 @@ export default function FireForm({
                       />
                       <input
                         type="number"
-                        value={expense.amount}
+                        value={expense.amount === 0 ? "" : expense.amount}
                         onChange={(e) => {
+                          const value = e.target.value;
                           const updatedExpense = {
                             ...expense,
-                            amount: parseFloat(e.target.value) || 0,
+                            amount: value === "" ? 0 : parseFloat(value),
                           };
                           onAddExpense("kids", updatedExpense);
                         }}
@@ -431,12 +504,20 @@ export default function FireForm({
                       />
                       <input
                         type="number"
-                        value={expense.startAge}
+                        value={
+                          expense.startAge === 0 ||
+                          expense.startAge === undefined
+                            ? inputs.currentAge
+                            : expense.startAge
+                        }
                         onChange={(e) => {
+                          const value = e.target.value;
                           const updatedExpense = {
                             ...expense,
                             startAge:
-                              parseFloat(e.target.value) || inputs.currentAge,
+                              value === ""
+                                ? inputs.currentAge
+                                : parseFloat(value),
                           };
                           onAddExpense("kids", updatedExpense);
                         }}
@@ -532,11 +613,12 @@ export default function FireForm({
                       />
                       <input
                         type="number"
-                        value={expense.amount}
+                        value={expense.amount === 0 ? "" : expense.amount}
                         onChange={(e) => {
+                          const value = e.target.value;
                           const updatedExpense = {
                             ...expense,
-                            amount: parseFloat(e.target.value) || 0,
+                            amount: value === "" ? 0 : parseFloat(value),
                           };
                           onAddExpense("parents", updatedExpense);
                         }}
@@ -551,12 +633,20 @@ export default function FireForm({
                       />
                       <input
                         type="number"
-                        value={expense.startAge}
+                        value={
+                          expense.startAge === 0 ||
+                          expense.startAge === undefined
+                            ? inputs.currentAge
+                            : expense.startAge
+                        }
                         onChange={(e) => {
+                          const value = e.target.value;
                           const updatedExpense = {
                             ...expense,
                             startAge:
-                              parseFloat(e.target.value) || inputs.currentAge,
+                              value === ""
+                                ? inputs.currentAge
+                                : parseFloat(value),
                           };
                           onAddExpense("parents", updatedExpense);
                         }}
