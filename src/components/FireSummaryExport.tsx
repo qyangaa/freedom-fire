@@ -79,12 +79,38 @@ export default function FireSummaryExport({
         backgroundColor: "#ffffff",
       });
 
-      // Convert to PNG and download
-      const image = canvas.toDataURL("image/png", 1.0);
-      const downloadLink = document.createElement("a");
-      downloadLink.href = image;
-      downloadLink.download = "fire-summary.png";
-      downloadLink.click();
+      // Convert to PNG
+      const base64Image = canvas.toDataURL("image/png", 1.0);
+
+      // Check if Web Share API is available (most mobile browsers)
+      if (navigator.share && /mobile|android|ios/i.test(navigator.userAgent)) {
+        try {
+          // Convert base64 to blob
+          const response = await fetch(base64Image);
+          const blob = await response.blob();
+          const file = new File([blob], "fire-summary.png", {
+            type: "image/png",
+          });
+
+          await navigator.share({
+            files: [file],
+            title: "FIRE Summary",
+          });
+        } catch (error) {
+          console.error("Error sharing:", error);
+          // Fallback to download if sharing fails
+          const downloadLink = document.createElement("a");
+          downloadLink.href = base64Image;
+          downloadLink.download = "fire-summary.png";
+          downloadLink.click();
+        }
+      } else {
+        // Desktop fallback - direct download
+        const downloadLink = document.createElement("a");
+        downloadLink.href = base64Image;
+        downloadLink.download = "fire-summary.png";
+        downloadLink.click();
+      }
     } catch (error) {
       console.error("Error exporting summary:", error);
     }
@@ -481,7 +507,9 @@ export default function FireSummaryExport({
           onClick={handleExport}
           className="w-full bg-black text-white px-5 py-2.5 rounded-lg hover:bg-gray-800 transition-colors text-sm"
         >
-          Export Full Summary
+          {/mobile|android|ios/i.test(navigator.userAgent)
+            ? "Share Summary"
+            : "Export Full Summary"}
         </button>
       </div>
     </div>

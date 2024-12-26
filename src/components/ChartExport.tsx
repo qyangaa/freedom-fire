@@ -42,13 +42,45 @@ export default function ChartExport({
 }: ChartExportProps) {
   const chartRef = useRef<any>(null);
 
-  const handleExport = () => {
+  const handleExport = async () => {
     if (chartRef.current) {
       const base64Image = chartRef.current.toBase64Image("image/png", 1.0);
-      const downloadLink = document.createElement("a");
-      downloadLink.href = base64Image;
-      downloadLink.download = `${title.toLowerCase().replace(/\s+/g, "-")}.png`;
-      downloadLink.click();
+
+      // Check if Web Share API is available (most mobile browsers)
+      if (navigator.share && /mobile|android|ios/i.test(navigator.userAgent)) {
+        try {
+          // Convert base64 to blob
+          const response = await fetch(base64Image);
+          const blob = await response.blob();
+          const file = new File(
+            [blob],
+            `${title.toLowerCase().replace(/\s+/g, "-")}.png`,
+            { type: "image/png" }
+          );
+
+          await navigator.share({
+            files: [file],
+            title: title,
+          });
+        } catch (error) {
+          console.error("Error sharing:", error);
+          // Fallback to download if sharing fails
+          const downloadLink = document.createElement("a");
+          downloadLink.href = base64Image;
+          downloadLink.download = `${title
+            .toLowerCase()
+            .replace(/\s+/g, "-")}.png`;
+          downloadLink.click();
+        }
+      } else {
+        // Desktop fallback - direct download
+        const downloadLink = document.createElement("a");
+        downloadLink.href = base64Image;
+        downloadLink.download = `${title
+          .toLowerCase()
+          .replace(/\s+/g, "-")}.png`;
+        downloadLink.click();
+      }
     }
   };
 
@@ -124,7 +156,9 @@ export default function ChartExport({
         onClick={handleExport}
         className="absolute top-2 right-2 bg-white bg-opacity-90 text-blue-600 px-2 py-1 rounded text-sm hover:bg-blue-50 transition-colors"
       >
-        Export PNG
+        {/mobile|android|ios/i.test(navigator.userAgent)
+          ? "Share"
+          : "Export PNG"}
       </button>
     </div>
   );
