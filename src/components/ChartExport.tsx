@@ -50,11 +50,14 @@ export default function ChartExport({
       const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
 
       if (isIOS) {
-        // For iOS devices, open the image in the current window
-        window.location.href = base64Image.replace(
-          "image/png",
-          "image/octet-stream"
-        );
+        // For iOS devices, open image in new tab which allows saving to camera roll
+        const newTab = window.open();
+        if (newTab) {
+          newTab.document.write(
+            `<img src="${base64Image}" alt="${title}" style="max-width: 100%; height: auto;" />`
+          );
+          newTab.document.title = title;
+        }
       } else if (
         navigator.share &&
         /mobile|android/i.test(navigator.userAgent)
