@@ -86,14 +86,16 @@ export default function FireSummaryExport({
       const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
 
       if (isIOS) {
-        // For iOS devices, open image in new tab which allows saving to camera roll
-        const newTab = window.open();
-        if (newTab) {
-          newTab.document.write(
-            `<img src="${base64Image}" alt="FIRE Summary" style="max-width: 100%; height: auto;" />`
-          );
-          newTab.document.title = "FIRE Summary";
-        }
+        // For iOS devices, create a temporary link and click it
+        const link = document.createElement("a");
+        link.href = base64Image;
+        link.download = "fire-summary.png";
+        // Add the link to the document
+        document.body.appendChild(link);
+        // Trigger click
+        link.click();
+        // Clean up
+        document.body.removeChild(link);
       } else if (
         navigator.share &&
         /mobile|android/i.test(navigator.userAgent)
