@@ -418,11 +418,7 @@ export default function FireForm({
                   />
                   <input
                     type="number"
-                    value={
-                      expense.startAge === inputs.currentAge
-                        ? ""
-                        : expense.startAge
-                    }
+                    value={expense.startAge}
                     onChange={(e) => {
                       const value = e.target.value;
                       const updatedExpense = {
@@ -542,12 +538,7 @@ export default function FireForm({
                       />
                       <input
                         type="number"
-                        value={
-                          expense.startAge === 0 ||
-                          expense.startAge === undefined
-                            ? inputs.currentAge
-                            : expense.startAge
-                        }
+                        value={expense.startAge}
                         onChange={(e) => {
                           const value = e.target.value;
                           const updatedExpense = {
@@ -671,12 +662,7 @@ export default function FireForm({
                       />
                       <input
                         type="number"
-                        value={
-                          expense.startAge === 0 ||
-                          expense.startAge === undefined
-                            ? inputs.currentAge
-                            : expense.startAge
-                        }
+                        value={expense.startAge}
                         onChange={(e) => {
                           const value = e.target.value;
                           const updatedExpense = {
