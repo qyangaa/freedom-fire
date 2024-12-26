@@ -50,16 +50,11 @@ export default function ChartExport({
       const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
 
       if (isIOS) {
-        // For iOS devices, create a temporary link and click it
-        const link = document.createElement("a");
-        link.href = base64Image;
-        link.download = `${title.toLowerCase().replace(/\s+/g, "-")}.png`;
-        // Add the link to the document
-        document.body.appendChild(link);
-        // Trigger click
-        link.click();
-        // Clean up
-        document.body.removeChild(link);
+        // For iOS devices, open the image in the current window
+        window.location.href = base64Image.replace(
+          "image/png",
+          "image/octet-stream"
+        );
       } else if (
         navigator.share &&
         /mobile|android/i.test(navigator.userAgent)
