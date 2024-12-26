@@ -46,8 +46,22 @@ export default function ChartExport({
     if (chartRef.current) {
       const base64Image = chartRef.current.toBase64Image("image/png", 1.0);
 
-      // Check if Web Share API is available (most mobile browsers)
-      if (navigator.share && /mobile|android|ios/i.test(navigator.userAgent)) {
+      // Check if it's iOS
+      const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+
+      if (isIOS) {
+        // For iOS devices, open image in new tab which allows saving to camera roll
+        const newTab = window.open();
+        if (newTab) {
+          newTab.document.write(
+            `<img src="${base64Image}" alt="${title}" style="max-width: 100%; height: auto;" />`
+          );
+          newTab.document.title = title;
+        }
+      } else if (
+        navigator.share &&
+        /mobile|android/i.test(navigator.userAgent)
+      ) {
         try {
           // Convert base64 to blob
           const response = await fetch(base64Image);
@@ -64,7 +78,7 @@ export default function ChartExport({
           });
         } catch (error) {
           console.error("Error sharing:", error);
-          // Fallback to download if sharing fails
+          // Fallback to download
           const downloadLink = document.createElement("a");
           downloadLink.href = base64Image;
           downloadLink.download = `${title
@@ -156,7 +170,9 @@ export default function ChartExport({
         onClick={handleExport}
         className="absolute top-2 right-2 bg-white bg-opacity-90 text-blue-600 px-2 py-1 rounded text-sm hover:bg-blue-50 transition-colors"
       >
-        {/mobile|android|ios/i.test(navigator.userAgent)
+        {/iPad|iPhone|iPod/.test(navigator.userAgent)
+          ? "Save to Photos"
+          : /mobile|android/i.test(navigator.userAgent)
           ? "Share"
           : "Export PNG"}
       </button>
