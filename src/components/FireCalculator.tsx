@@ -6,7 +6,7 @@ import type {
 } from "../types/fire";
 import { calculateFireProjections } from "../utils/fireCalculations";
 import FireForm from "./FireForm";
-import FireCharts from "./FireCharts";
+import FireSummaryExport from "./FireSummaryExport";
 import FireExplanation from "./FireExplanation";
 import ImportExportModal from "./ImportExportModal";
 
@@ -14,6 +14,7 @@ const defaultInputs: ExtendedFireInputs = {
   // Basic inputs
   currentAge: 30,
   currentSavings: 100000,
+  currentLiabilities: 0,
   annualIncome: 100000,
   annualExpenses: 50000,
   investmentReturn: 0.07,
@@ -156,8 +157,8 @@ export default function FireCalculator() {
   };
 
   return (
-    <div className="container mx-auto px-4 py-12 max-w-5xl">
-      <div className="flex justify-between items-center mb-12">
+    <div className="container mx-auto py-8 max-w-5xl">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-8 px-4">
         <div>
           <h1 className="text-4xl font-light tracking-tight">FreedomFIRE</h1>
           <p className="text-gray-500 mt-2 text-lg">
@@ -166,14 +167,14 @@ export default function FireCalculator() {
         </div>
         <button
           onClick={() => setIsImportExportOpen(true)}
-          className="bg-black text-white px-5 py-2.5 rounded-lg hover:bg-gray-800 transition-colors text-sm"
+          className="bg-black text-white px-5 py-2.5 rounded-lg hover:bg-gray-800 transition-colors text-sm w-full sm:w-auto"
         >
           Import/Export Data
         </button>
       </div>
 
-      <div className="space-y-12">
-        <div className="bg-white rounded-xl p-8 shadow-sm border border-gray-100">
+      <div className="space-y-8">
+        <div className="bg-white p-4 sm:p-8">
           <FireForm
             inputs={inputs}
             onInputChange={handleInputChange}
@@ -200,60 +201,105 @@ export default function FireCalculator() {
 
         {results && (
           <>
-            <div className="bg-white rounded-xl p-8 shadow-sm border border-gray-100">
-              <h2 className="text-2xl font-light mb-8">Results</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <div>
-                  <h3 className="text-sm font-medium text-gray-500 mb-1">
-                    FIRE Age
-                  </h3>
-                  <p className="text-4xl font-light">{results.fireAge}</p>
-                  <p className="text-gray-500 text-sm mt-1">
-                    Years to FIRE: {results.yearsToFire}
-                  </p>
-                </div>
-                <div>
-                  <h3 className="text-sm font-medium text-gray-500 mb-1">
-                    Final Net Worth
-                  </h3>
-                  <p className="text-4xl font-light">
-                    ${Math.round(results.finalNetWorth).toLocaleString()}
-                  </p>
-                </div>
-                <div>
-                  <h3 className="text-sm font-medium text-gray-500 mb-1">
-                    Annual Expenses at FIRE
-                  </h3>
-                  <p className="text-4xl font-light">
-                    $
-                    {Math.round(
-                      results.projectedAnnualExpensesAtFire
-                    ).toLocaleString()}
-                  </p>
-                </div>
-                <div>
-                  <h3 className="text-sm font-medium text-gray-500 mb-1">
-                    Real Investment Return
-                  </h3>
-                  <p className="text-4xl font-light">
-                    {(results.realInvestmentReturn * 100).toFixed(1)}%
-                  </p>
-                  <p className="text-gray-500 text-sm mt-1">After inflation</p>
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-white rounded-xl p-8 shadow-sm border border-gray-100">
-              <FireCharts
-                projections={results.yearlyProjections}
-                fireAge={results.fireAge}
-                inflationRate={inputs.inflationRate}
+            <div className="bg-white p-4 sm:p-8">
+              <FireSummaryExport
                 inputs={inputs}
                 results={results}
+                netWorthData={{
+                  labels: results.yearlyProjections.map((p) => p.age),
+                  datasets: [
+                    {
+                      label: "Net Worth",
+                      data: results.yearlyProjections.map((p) => p.netWorth),
+                      borderColor: "rgb(59, 130, 246)",
+                      backgroundColor: "rgba(59, 130, 246, 0.1)",
+                      fill: true,
+                      tension: 0.4,
+                    },
+                  ],
+                }}
+                netWorthOptions={{
+                  plugins: {
+                    title: {
+                      display: true,
+                      text: "Net Worth Projection (in today's dollars)",
+                    },
+                  },
+                }}
+                incomeExpensesData={{
+                  labels: results.yearlyProjections.map((p) => p.age),
+                  datasets: [
+                    {
+                      label: "Employment Income",
+                      data: results.yearlyProjections.map(
+                        (p) => p.annualIncome
+                      ),
+                      borderColor: "rgb(34, 197, 94)",
+                      backgroundColor: "rgba(34, 197, 94, 0.1)",
+                      fill: true,
+                      tension: 0.4,
+                    },
+                    {
+                      label: "Investment Returns",
+                      data: results.yearlyProjections.map(
+                        (p) => p.investmentReturns
+                      ),
+                      borderColor: "rgb(168, 85, 247)",
+                      backgroundColor: "rgba(168, 85, 247, 0.1)",
+                      fill: true,
+                      tension: 0.4,
+                    },
+                    {
+                      label: "Base Expenses",
+                      data: results.yearlyProjections.map(
+                        (p) => p.baseExpenses
+                      ),
+                      borderColor: "rgb(239, 68, 68)",
+                      backgroundColor: "rgba(239, 68, 68, 0.1)",
+                      fill: true,
+                      tension: 0.4,
+                    },
+                    ...(inputs.hasKidsExpenses
+                      ? [
+                          {
+                            label: "Kids Expenses",
+                            data: results.yearlyProjections.map(
+                              (p) => p.kidsExpenses || 0
+                            ),
+                            borderColor: "rgb(245, 158, 11)",
+                            backgroundColor: "rgba(245, 158, 11, 0.1)",
+                            fill: true,
+                            tension: 0.4,
+                          },
+                        ]
+                      : []),
+                    ...(inputs.hasParentsCare
+                      ? [
+                          {
+                            label: "Elderly Care Expenses",
+                            data: results.yearlyProjections.map(
+                              (p) => p.parentsCareExpenses || 0
+                            ),
+                            borderColor: "rgb(236, 72, 153)",
+                            backgroundColor: "rgba(236, 72, 153, 0.1)",
+                            fill: true,
+                            tension: 0.4,
+                          },
+                        ]
+                      : []),
+                  ],
+                }}
+                incomeExpensesOptions={{
+                  plugins: {
+                    title: {
+                      display: true,
+                      text: "Income, Expenses & Investment Returns (in today's dollars)",
+                    },
+                  },
+                }}
               />
             </div>
-
-            <div className="bg-white rounded-xl p-8 shadow-sm border border-gray-100">
+            <div className="bg-white p-4 sm:p-8">
               <FireExplanation inputs={inputs} results={results} />
             </div>
           </>

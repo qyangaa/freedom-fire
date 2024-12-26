@@ -1,7 +1,30 @@
 import { useRef } from "react";
 import type { ExtendedFireInputs, FireResults } from "../types/fire";
 import type { ChartData, ChartOptions } from "chart.js";
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+  SubTitle,
+} from "chart.js";
 import { Line } from "react-chartjs-2";
+
+// Register ChartJS components
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+  SubTitle
+);
 
 interface FireSummaryExportProps {
   inputs: ExtendedFireInputs;
@@ -32,6 +55,15 @@ export default function FireSummaryExport({
 
   const formatPercentage = (value: number) => {
     return `${(value * 100).toFixed(1)}%`;
+  };
+
+  const formatAxisValue = (value: number) => {
+    if (Math.abs(value) >= 1000000) {
+      return `$${(value / 1000000).toFixed(1)}M`;
+    } else if (Math.abs(value) >= 1000) {
+      return `$${(value / 1000).toFixed(0)}K`;
+    }
+    return `$${value.toFixed(0)}`;
   };
 
   const handleExport = async () => {
@@ -65,10 +97,10 @@ export default function FireSummaryExport({
     ...options,
     layout: {
       padding: {
-        left: 8,
-        right: 8,
-        top: 8,
-        bottom: 8,
+        left: 12,
+        right: 12,
+        top: 16,
+        bottom: 16,
       },
     },
     elements: {
@@ -89,38 +121,49 @@ export default function FireSummaryExport({
         align: "start" as const,
         labels: {
           ...options.plugins?.legend?.labels,
-          boxWidth: 8,
-          padding: 12,
+          boxWidth: window.innerWidth < 640 ? 10 : 12,
+          padding: window.innerWidth < 640 ? 10 : 12,
           font: {
-            size: 10,
+            size: window.innerWidth < 640 ? 11 : 14,
             family: "system-ui",
+            weight: "bold",
           },
           usePointStyle: true,
         },
       },
       title: {
         ...options.plugins?.title,
+        display: true,
         font: {
-          size: 12,
+          size: window.innerWidth < 640 ? 13 : 16,
           family: "system-ui",
           weight: "normal",
         },
-        padding: { top: 8, bottom: 12 },
+        padding: { top: 12, bottom: 12 },
         color: "rgb(107, 114, 128)", // text-gray-500
+        text: options.plugins?.title?.text || "",
+        align: "start" as const,
       },
       tooltip: {
         ...options.plugins?.tooltip,
         backgroundColor: "rgba(0, 0, 0, 0.8)",
-        padding: 6,
+        padding: 8,
         titleFont: {
-          size: 10,
+          size: window.innerWidth < 640 ? 12 : 14,
           family: "system-ui",
+          weight: "bold",
         },
         bodyFont: {
-          size: 9,
+          size: window.innerWidth < 640 ? 11 : 13,
           family: "system-ui",
         },
         cornerRadius: 4,
+        callbacks: {
+          label: (context) => {
+            const value = context.parsed.y;
+            return ` ${context.dataset.label}: ${formatAxisValue(value)}`;
+          },
+        },
       },
     },
     scales: {
@@ -129,15 +172,16 @@ export default function FireSummaryExport({
         ...options.scales?.y,
         ticks: {
           ...options.scales?.y?.ticks,
+          callback: (value) => formatAxisValue(Number(value)),
           font: {
-            size: 9,
+            size: window.innerWidth < 640 ? 11 : 13,
             family: "system-ui",
+            weight: "bold",
           },
-          padding: 4,
-          maxTicksLimit: 5,
+          padding: 6,
+          maxTicksLimit: window.innerWidth < 640 ? 5 : 6,
         },
         title: {
-          ...options.scales?.y?.title,
           display: false,
         },
         grid: {
@@ -152,15 +196,22 @@ export default function FireSummaryExport({
         ticks: {
           ...options.scales?.x?.ticks,
           font: {
-            size: 9,
+            size: window.innerWidth < 640 ? 11 : 13,
             family: "system-ui",
+            weight: "bold",
           },
-          padding: 4,
-          maxTicksLimit: 5,
+          padding: 6,
+          maxTicksLimit: window.innerWidth < 640 ? 5 : 6,
         },
         title: {
-          ...options.scales?.x?.title,
-          display: false,
+          display: true,
+          text: "Age (Years)",
+          font: {
+            size: window.innerWidth < 640 ? 11 : 13,
+            family: "system-ui",
+            weight: "normal",
+          },
+          padding: { top: 10, bottom: 0 },
         },
         grid: {
           display: false,
@@ -199,30 +250,47 @@ export default function FireSummaryExport({
       {
         label: "Total Expenses",
         data: (incomeExpensesData.labels || []).map((_, i) => {
-          const baseExpenses = Number(
-            incomeExpensesData.datasets.find((d) => d.label === "Base Expenses")
-              ?.data[i] || 0
+          // Find the base expenses dataset
+          const baseExpensesData = incomeExpensesData.datasets.find(
+            (d) => d.label === "Base Expenses"
           );
-          const kidsExpenses = Number(
-            incomeExpensesData.datasets.find((d) => d.label === "Kids Expenses")
-              ?.data[i] || 0
+          const baseExpenses = baseExpensesData
+            ? Number(baseExpensesData.data[i])
+            : 0;
+
+          // Find the kids expenses dataset
+          const kidsExpensesData = incomeExpensesData.datasets.find(
+            (d) => d.label === "Kids Expenses"
           );
-          const parentsCareExpenses = Number(
-            incomeExpensesData.datasets.find(
-              (d) => d.label === "Parents Care Expenses"
-            )?.data[i] || 0
+          const kidsExpenses = kidsExpensesData
+            ? Number(kidsExpensesData.data[i])
+            : 0;
+
+          // Find the elderly care expenses dataset
+          const elderlyCareExpensesData = incomeExpensesData.datasets.find(
+            (d) => d.label === "Elderly Care Expenses"
           );
-          const additionalRetirementExpenses = Number(
+          const elderlyCareExpenses = elderlyCareExpensesData
+            ? Number(elderlyCareExpensesData.data[i])
+            : 0;
+
+          // Find the additional retirement expenses dataset
+          const additionalRetirementExpensesData =
             incomeExpensesData.datasets.find(
               (d) => d.label === "Additional Retirement Expenses"
-            )?.data[i] || 0
-          );
-          return (
+            );
+          const additionalRetirementExpenses = additionalRetirementExpensesData
+            ? Number(additionalRetirementExpensesData.data[i])
+            : 0;
+
+          // Sum all expenses
+          const totalExpenses =
             baseExpenses +
             kidsExpenses +
-            parentsCareExpenses +
-            additionalRetirementExpenses
-          );
+            elderlyCareExpenses +
+            additionalRetirementExpenses;
+
+          return totalExpenses;
         }),
         borderColor: "rgb(239, 68, 68)", // red-600
         backgroundColor: "rgba(239, 68, 68, 0.1)",
@@ -246,17 +314,7 @@ export default function FireSummaryExport({
 
   return (
     <div className="relative">
-      <button
-        onClick={handleExport}
-        className="absolute -top-12 right-0 bg-black text-white px-5 py-2.5 rounded-lg hover:bg-gray-800 transition-colors text-sm"
-      >
-        Export Full Summary
-      </button>
-      <div
-        ref={containerRef}
-        className="bg-white p-8 space-y-8"
-        style={{ width: "390px" }}
-      >
+      <div ref={containerRef} className="bg-white p-4 space-y-6 w-full">
         {/* Title */}
         <div className="text-center">
           <h1 className="text-3xl font-light tracking-tight">FreedomFIRE</h1>
@@ -266,9 +324,9 @@ export default function FireSummaryExport({
         </div>
 
         {/* Key Results */}
-        <div className="bg-gray-50 p-6 rounded-xl">
+        <div className="bg-gray-50 p-4 rounded-lg">
           <h2 className="text-lg font-light mb-4">Key Results</h2>
-          <div className="space-y-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <span className="text-sm text-gray-500">FIRE Age:</span>{" "}
               <span className="text-xl font-light">{results.fireAge}</span>
@@ -302,29 +360,67 @@ export default function FireSummaryExport({
         </div>
 
         {/* Charts */}
-        <div className="space-y-8">
-          <div className="bg-gray-50 p-4 rounded-xl">
-            <div className="w-full">
+        <div className="space-y-6">
+          <div className="bg-gray-50 p-0 sm:p-4 rounded-lg">
+            <div className="w-full min-h-[300px] sm:min-h-[400px]">
               <Line
                 data={simplifiedNetWorthData}
                 options={{
-                  ...getMobileOptions(netWorthOptions),
+                  ...getMobileOptions({
+                    ...netWorthOptions,
+                    plugins: {
+                      ...netWorthOptions.plugins,
+                      title: {
+                        ...netWorthOptions.plugins?.title,
+                        text: "Net Worth Over Time",
+                        padding: { top: 20, bottom: 0 },
+                      },
+                      subtitle: {
+                        display: true,
+                        text: "All values in today's dollars",
+                        color: "rgb(107, 114, 128)",
+                        font: {
+                          size: window.innerWidth < 640 ? 11 : 13,
+                          family: "system-ui",
+                        },
+                        padding: { top: 8, bottom: 0 },
+                      },
+                    },
+                  }),
                   responsive: true,
-                  maintainAspectRatio: true,
-                  aspectRatio: 1.4,
+                  maintainAspectRatio: false,
                 }}
               />
             </div>
           </div>
-          <div className="bg-gray-50 p-4 rounded-xl">
-            <div className="w-full">
+          <div className="bg-gray-50 p-0 sm:p-4 rounded-lg">
+            <div className="w-full min-h-[300px] sm:min-h-[400px]">
               <Line
                 data={simplifiedIncomeExpensesData}
                 options={{
-                  ...getMobileOptions(incomeExpensesOptions),
+                  ...getMobileOptions({
+                    ...incomeExpensesOptions,
+                    plugins: {
+                      ...incomeExpensesOptions.plugins,
+                      title: {
+                        ...incomeExpensesOptions.plugins?.title,
+                        text: "Income & Expenses Over Time",
+                        padding: { top: 20, bottom: 0 },
+                      },
+                      subtitle: {
+                        display: true,
+                        text: "All values in today's dollars",
+                        color: "rgb(107, 114, 128)",
+                        font: {
+                          size: window.innerWidth < 640 ? 11 : 13,
+                          family: "system-ui",
+                        },
+                        padding: { top: 8, bottom: 0 },
+                      },
+                    },
+                  }),
                   responsive: true,
-                  maintainAspectRatio: true,
-                  aspectRatio: 1.4,
+                  maintainAspectRatio: false,
                 }}
               />
             </div>
@@ -332,16 +428,26 @@ export default function FireSummaryExport({
         </div>
 
         {/* Key Assumptions */}
-        <div className="bg-gray-50 p-6 rounded-xl">
+        <div className="bg-gray-50 p-4 rounded-lg">
           <h2 className="text-lg font-light mb-4">Key Assumptions</h2>
-          <div className="space-y-2 text-sm">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
             <div>
               <span className="text-gray-500">Current Age:</span>{" "}
               {inputs.currentAge}
             </div>
             <div>
-              <span className="text-gray-500">Current Savings:</span>{" "}
+              <span className="text-gray-500">Current Assets:</span>{" "}
               {formatCurrency(inputs.currentSavings)}
+            </div>
+            <div>
+              <span className="text-gray-500">Current Liabilities:</span>{" "}
+              {formatCurrency(inputs.currentLiabilities)}
+            </div>
+            <div>
+              <span className="text-gray-500">Net Worth:</span>{" "}
+              {formatCurrency(
+                inputs.currentSavings - inputs.currentLiabilities
+              )}
             </div>
             <div>
               <span className="text-gray-500">Annual Income:</span>{" "}
@@ -367,6 +473,16 @@ export default function FireSummaryExport({
           <p>Generated by FreedomFIRE</p>
           <p>All values are in today's dollars, adjusted for inflation</p>
         </div>
+      </div>
+
+      {/* Export Button */}
+      <div className="mt-6">
+        <button
+          onClick={handleExport}
+          className="w-full bg-black text-white px-5 py-2.5 rounded-lg hover:bg-gray-800 transition-colors text-sm"
+        >
+          Export Full Summary
+        </button>
       </div>
     </div>
   );

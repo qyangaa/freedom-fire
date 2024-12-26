@@ -21,12 +21,23 @@ export interface AdditionalExpense {
 }
 
 // Extended inputs including optional parameters
-export interface ExtendedFireInputs extends FireInputs {
+export interface ExtendedFireInputs {
+  currentAge: number;
+  currentSavings: number;
+  currentLiabilities: number;
+  annualIncome: number;
+  annualExpenses: number;
+  investmentReturn: number;
+  inflationRate: number;
+  taxRate: number;
+  careerGrowthRate: number;
+  careerGrowthSlowdownAge: number;
+
   additionalRetirementExpenses: AdditionalExpense[];
   hasKidsExpenses: boolean;
-  kidsExpenses?: AdditionalExpense[];
+  kidsExpenses: AdditionalExpense[];
   hasParentsCare: boolean;
-  parentsCareExpenses?: AdditionalExpense[];
+  parentsCareExpenses: AdditionalExpense[];
 }
 
 // Yearly projection data for charts

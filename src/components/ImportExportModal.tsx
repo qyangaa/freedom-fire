@@ -19,6 +19,8 @@ export default function ImportExportModal({
 
   const handleExport = () => {
     const exportText = JSON.stringify(currentInputs, null, 2);
+    console.log("Exporting data:", currentInputs);
+    console.log("Stringified data:", exportText);
     navigator.clipboard.writeText(exportText);
     setError("Copied to clipboard!");
     setTimeout(() => setError(null), 2000);
@@ -26,24 +28,81 @@ export default function ImportExportModal({
 
   const handleImport = () => {
     try {
+      console.log("Importing text:", inputText);
       const inputs = JSON.parse(inputText);
+      console.log("Parsed inputs:", inputs);
+
       // Basic validation
       if (typeof inputs !== "object") throw new Error("Invalid input format");
-      if (typeof inputs.currentAge !== "number")
-        throw new Error("Missing or invalid currentAge");
-      if (typeof inputs.currentSavings !== "number")
-        throw new Error("Missing or invalid currentSavings");
-      if (typeof inputs.annualIncome !== "number")
-        throw new Error("Missing or invalid annualIncome");
-      if (typeof inputs.annualExpenses !== "number")
-        throw new Error("Missing or invalid annualExpenses");
+
+      // Required number fields
+      const requiredNumberFields = [
+        "currentAge",
+        "currentSavings",
+        "currentLiabilities",
+        "annualIncome",
+        "annualExpenses",
+        "investmentReturn",
+        "inflationRate",
+        "taxRate",
+        "careerGrowthRate",
+        "careerGrowthSlowdownAge",
+      ];
+
+      for (const field of requiredNumberFields) {
+        if (typeof inputs[field] !== "number") {
+          console.log(
+            `Field ${field} is invalid:`,
+            inputs[field],
+            typeof inputs[field]
+          );
+          throw new Error(
+            `Missing or invalid field: ${field} (expected number, got ${typeof inputs[
+              field
+            ]})`
+          );
+        }
+      }
+
+      // Required boolean fields
+      if (typeof inputs.hasKidsExpenses !== "boolean") {
+        throw new Error(
+          `Missing or invalid field: hasKidsExpenses (expected boolean, got ${typeof inputs.hasKidsExpenses})`
+        );
+      }
+      if (typeof inputs.hasParentsCare !== "boolean") {
+        throw new Error(
+          `Missing or invalid field: hasParentsCare (expected boolean, got ${typeof inputs.hasParentsCare})`
+        );
+      }
+
+      // Required array fields
+      if (!Array.isArray(inputs.additionalRetirementExpenses)) {
+        throw new Error(
+          `Missing or invalid field: additionalRetirementExpenses (expected array, got ${typeof inputs.additionalRetirementExpenses})`
+        );
+      }
+      if (!Array.isArray(inputs.kidsExpenses)) {
+        throw new Error(
+          `Missing or invalid field: kidsExpenses (expected array, got ${typeof inputs.kidsExpenses})`
+        );
+      }
+      if (!Array.isArray(inputs.parentsCareExpenses)) {
+        throw new Error(
+          `Missing or invalid field: parentsCareExpenses (expected array, got ${typeof inputs.parentsCareExpenses})`
+        );
+      }
 
       onImport(inputs as ExtendedFireInputs);
       onClose();
       setInputText("");
       setError(null);
     } catch (err) {
-      setError("Invalid input format. Please check your JSON data.");
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError("Invalid input format. Please check your JSON data.");
+      }
     }
   };
 

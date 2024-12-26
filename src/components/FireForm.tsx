@@ -85,8 +85,8 @@ export default function FireForm({
           <div>
             <FormLabel
               htmlFor="currentSavings"
-              label="Current Savings"
-              tooltip="Your current total savings and investments"
+              label="Current Assets"
+              tooltip="Total value of everything you own (savings, investments, property, etc.)"
               showTodaysDollar
             />
             <input
@@ -104,6 +104,45 @@ export default function FireForm({
               min="0"
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
+          </div>
+
+          <div>
+            <FormLabel
+              htmlFor="currentLiabilities"
+              label="Current Liabilities"
+              tooltip="Total value of everything you owe (mortgages, loans, credit cards, etc.). Enter 0 if you have no debt."
+              showTodaysDollar
+            />
+            <input
+              type="number"
+              id="currentLiabilities"
+              name="currentLiabilities"
+              value={inputs.currentLiabilities}
+              onChange={(e) => {
+                const value = e.target.value;
+                onInputChange(
+                  "currentLiabilities",
+                  value === "" ? 0 : parseFloat(value)
+                );
+              }}
+              placeholder="0"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+
+          <div className="md:col-span-2 bg-gray-50 p-4 rounded-lg">
+            <div className="flex justify-between items-center">
+              <span className="text-sm text-gray-500">Current Net Worth:</span>
+              <span className="text-xl font-light">
+                {new Intl.NumberFormat("en-US", {
+                  style: "currency",
+                  currency: "USD",
+                  maximumFractionDigits: 0,
+                }).format(
+                  inputs.currentSavings - (inputs.currentLiabilities || 0)
+                )}
+              </span>
+            </div>
           </div>
 
           <div>
@@ -572,8 +611,8 @@ export default function FireForm({
             />
             <FormLabel
               htmlFor="hasParentsCare"
-              label="Include Parents Care Expenses"
-              tooltip="Add expenses for parents' care and support"
+              label="Include Elderly Care Expenses"
+              tooltip="Add expenses for elderly family care and support"
               className="ml-2 text-lg !mb-0"
             />
           </div>
@@ -581,13 +620,13 @@ export default function FireForm({
           {inputs.hasParentsCare && (
             <div className="pl-6">
               <div className="flex justify-between items-center mb-4">
-                <FormLabel label="Parents Care Expenses" />
+                <FormLabel label="Elderly Care Expenses" />
                 <button
                   type="button"
                   onClick={() => handleAddExpense("parents")}
                   className="px-3 py-1 text-sm bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors"
                 >
-                  Add Parent
+                  Add Care Plan
                 </button>
               </div>
 
