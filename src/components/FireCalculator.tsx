@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import type {
   ExtendedFireInputs,
   FireResults,
@@ -37,6 +37,7 @@ export default function FireCalculator() {
   const [isCalculating, setIsCalculating] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isImportExportOpen, setIsImportExportOpen] = useState(false);
+  const resultsRef = useRef<HTMLDivElement>(null);
 
   const handleInputChange = (
     name: keyof ExtendedFireInputs,
@@ -141,6 +142,19 @@ export default function FireCalculator() {
         const results = calculateFireProjections(inputs);
         setResults(results);
         setIsCalculating(false);
+
+        // Scroll to results after a short delay to ensure content is rendered
+        setTimeout(() => {
+          if (resultsRef.current) {
+            const yOffset = -20; // Add some padding from the top
+            const element = resultsRef.current;
+            const y =
+              element.getBoundingClientRect().top +
+              window.pageYOffset +
+              yOffset;
+            window.scrollTo({ top: y, behavior: "smooth" });
+          }
+        }, 100);
       }, 100);
     } catch (err) {
       setError(
@@ -200,7 +214,7 @@ export default function FireCalculator() {
         </div>
 
         {results && (
-          <>
+          <div ref={resultsRef}>
             <div className="bg-white p-4 sm:p-8">
               <FireSummaryExport
                 inputs={inputs}
@@ -302,7 +316,7 @@ export default function FireCalculator() {
             <div className="bg-white p-4 sm:p-8">
               <FireExplanation inputs={inputs} results={results} />
             </div>
-          </>
+          </div>
         )}
       </div>
 
