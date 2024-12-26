@@ -413,43 +413,48 @@ export default function FireForm({
                 </div>
                 <div>
                   <FormLabel
-                    label="Start Age"
-                    tooltip="Age when this expense starts"
+                    label="Start (Years from Now)"
+                    tooltip="When will this expense start, in years from now"
                   />
                   <input
                     type="number"
-                    value={expense.startAge}
+                    value={expense.startAge - inputs.currentAge}
                     onChange={(e) => {
                       const value = e.target.value;
                       const updatedExpense = {
                         ...expense,
                         startAge:
-                          value === "" ? inputs.currentAge : parseFloat(value),
+                          value === ""
+                            ? inputs.currentAge
+                            : inputs.currentAge + parseFloat(value),
                       };
                       onAddExpense("retirement", updatedExpense);
                     }}
-                    min={inputs.currentAge}
+                    min="0"
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
                 <div>
                   <FormLabel
-                    label="End Age"
-                    tooltip="Optional: Age when this expense ends"
+                    label="Duration (Years)"
+                    tooltip="How long will this expense last (leave empty for lifelong)"
                   />
                   <input
                     type="number"
-                    value={expense.endAge || ""}
+                    value={
+                      expense.endAge ? expense.endAge - expense.startAge : ""
+                    }
                     onChange={(e) => {
+                      const value = e.target.value;
                       const updatedExpense = {
                         ...expense,
-                        endAge: e.target.value
-                          ? parseFloat(e.target.value)
+                        endAge: value
+                          ? expense.startAge + parseFloat(value)
                           : undefined,
                       };
                       onAddExpense("retirement", updatedExpense);
                     }}
-                    min={expense.startAge}
+                    min="1"
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
@@ -533,12 +538,12 @@ export default function FireForm({
                     </div>
                     <div>
                       <FormLabel
-                        label="Start Age (Your Age)"
-                        tooltip="Your age when these expenses start"
+                        label="Start (Years from Now)"
+                        tooltip="When will these expenses start, in years from now"
                       />
                       <input
                         type="number"
-                        value={expense.startAge}
+                        value={expense.startAge - inputs.currentAge}
                         onChange={(e) => {
                           const value = e.target.value;
                           const updatedExpense = {
@@ -546,32 +551,37 @@ export default function FireForm({
                             startAge:
                               value === ""
                                 ? inputs.currentAge
-                                : parseFloat(value),
+                                : inputs.currentAge + parseFloat(value),
                           };
                           onAddExpense("kids", updatedExpense);
                         }}
-                        min={inputs.currentAge}
+                        min="0"
                         className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                       />
                     </div>
                     <div>
                       <FormLabel
-                        label="End Age (Your Age)"
-                        tooltip="Your age when these expenses end"
+                        label="Duration (Years)"
+                        tooltip="How long will these expenses last (e.g., until college graduation)"
                       />
                       <input
                         type="number"
-                        value={expense.endAge || ""}
+                        value={
+                          expense.endAge
+                            ? expense.endAge - expense.startAge
+                            : ""
+                        }
                         onChange={(e) => {
+                          const value = e.target.value;
                           const updatedExpense = {
                             ...expense,
-                            endAge: e.target.value
-                              ? parseFloat(e.target.value)
+                            endAge: value
+                              ? expense.startAge + parseFloat(value)
                               : undefined,
                           };
                           onAddExpense("kids", updatedExpense);
                         }}
-                        min={expense.startAge}
+                        min="1"
                         className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                       />
                     </div>
@@ -657,12 +667,12 @@ export default function FireForm({
                     </div>
                     <div>
                       <FormLabel
-                        label="Start Age (Your Age)"
-                        tooltip="Your age when these expenses start"
+                        label="Start (Years from Now)"
+                        tooltip="When will these care expenses start, in years from now"
                       />
                       <input
                         type="number"
-                        value={expense.startAge}
+                        value={expense.startAge - inputs.currentAge}
                         onChange={(e) => {
                           const value = e.target.value;
                           const updatedExpense = {
@@ -670,32 +680,37 @@ export default function FireForm({
                             startAge:
                               value === ""
                                 ? inputs.currentAge
-                                : parseFloat(value),
+                                : inputs.currentAge + parseFloat(value),
                           };
                           onAddExpense("parents", updatedExpense);
                         }}
-                        min={inputs.currentAge}
+                        min="0"
                         className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                       />
                     </div>
                     <div>
                       <FormLabel
-                        label="End Age (Your Age)"
-                        tooltip="Your age when these expenses end"
+                        label="Duration (Years)"
+                        tooltip="How long will these care expenses last (leave empty for lifelong)"
                       />
                       <input
                         type="number"
-                        value={expense.endAge || ""}
+                        value={
+                          expense.endAge
+                            ? expense.endAge - expense.startAge
+                            : ""
+                        }
                         onChange={(e) => {
+                          const value = e.target.value;
                           const updatedExpense = {
                             ...expense,
-                            endAge: e.target.value
-                              ? parseFloat(e.target.value)
+                            endAge: value
+                              ? expense.startAge + parseFloat(value)
                               : undefined,
                           };
                           onAddExpense("parents", updatedExpense);
                         }}
-                        min={expense.startAge}
+                        min="1"
                         className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                       />
                     </div>

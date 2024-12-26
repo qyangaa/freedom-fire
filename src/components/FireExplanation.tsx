@@ -43,12 +43,144 @@ export default function FireExplanation({
           <div className="pl-4 space-y-2">
             <p>• Current Age: {inputs.currentAge}</p>
             <p>• Current Savings: {formatCurrency(inputs.currentSavings)}</p>
+            <p>
+              • Current Liabilities: {formatCurrency(inputs.currentLiabilities)}
+            </p>
+            <p>
+              • Net Worth:{" "}
+              {formatCurrency(
+                inputs.currentSavings - inputs.currentLiabilities
+              )}
+            </p>
             <p>• Annual Income: {formatCurrency(inputs.annualIncome)}</p>
-            <p>• Annual Expenses: {formatCurrency(inputs.annualExpenses)}</p>
+            <p>
+              • Annual Expenses: {formatCurrency(inputs.annualExpenses)}
+              {(inputs.additionalRetirementExpenses.some(
+                (e) => e.startAge === inputs.currentAge
+              ) ||
+                (inputs.hasKidsExpenses &&
+                  inputs.kidsExpenses.some(
+                    (e) => e.startAge === inputs.currentAge
+                  )) ||
+                (inputs.hasParentsCare &&
+                  inputs.parentsCareExpenses.some(
+                    (e) => e.startAge === inputs.currentAge
+                  ))) && (
+                <>
+                  <br />
+                  <span className="text-sm text-gray-600 ml-2">
+                    + Additional expenses starting now:
+                  </span>
+                  <ul className="list-disc pl-6 text-sm text-gray-600">
+                    {inputs.additionalRetirementExpenses
+                      .filter((e) => e.startAge === inputs.currentAge)
+                      .map((e) => (
+                        <li key={e.id}>
+                          {e.name || "Retirement expense"}:{" "}
+                          {formatCurrency(e.amount)} per year
+                          {e.endAge && ` for ${e.endAge - e.startAge} years`}
+                        </li>
+                      ))}
+                    {inputs.hasKidsExpenses &&
+                      inputs.kidsExpenses
+                        .filter((e) => e.startAge === inputs.currentAge)
+                        .map((e) => (
+                          <li key={e.id}>
+                            Kids expenses: {formatCurrency(e.amount)} per year
+                            {e.endAge && ` for ${e.endAge - e.startAge} years`}
+                          </li>
+                        ))}
+                    {inputs.hasParentsCare &&
+                      inputs.parentsCareExpenses
+                        .filter((e) => e.startAge === inputs.currentAge)
+                        .map((e) => (
+                          <li key={e.id}>
+                            Elderly care: {formatCurrency(e.amount)} per year
+                            {e.endAge && ` for ${e.endAge - e.startAge} years`}
+                          </li>
+                        ))}
+                  </ul>
+                </>
+              )}
+            </p>
             <p className="text-sm text-gray-600 mt-2">
               These are your baseline numbers in today's dollars. All future
               projections are adjusted for inflation to maintain purchasing
               power.
+            </p>
+          </div>
+        </section>
+
+        {/* Future Expenses */}
+        <section>
+          <h3 className="text-xl font-semibold mb-3">2. Future Expenses</h3>
+          <div className="pl-4 space-y-4">
+            {inputs.additionalRetirementExpenses.length > 0 && (
+              <div>
+                <p>
+                  <strong>Additional Retirement Expenses:</strong>
+                </p>
+                <ul className="list-disc pl-6">
+                  {inputs.additionalRetirementExpenses.map((expense) => (
+                    <li key={expense.id}>
+                      {expense.name || "Retirement expense"}:{" "}
+                      {formatCurrency(expense.amount)} per year
+                      {expense.startAge > inputs.currentAge &&
+                        ` starting in ${
+                          expense.startAge - inputs.currentAge
+                        } years`}
+                      {expense.endAge &&
+                        ` for ${expense.endAge - expense.startAge} years`}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {inputs.hasKidsExpenses && inputs.kidsExpenses && (
+              <div>
+                <p>
+                  <strong>Kids Expenses:</strong>
+                </p>
+                <ul className="list-disc pl-6">
+                  {inputs.kidsExpenses.map((expense) => (
+                    <li key={expense.id}>
+                      {formatCurrency(expense.amount)} per year
+                      {expense.startAge > inputs.currentAge &&
+                        ` starting in ${
+                          expense.startAge - inputs.currentAge
+                        } years`}
+                      {expense.endAge &&
+                        ` for ${expense.endAge - expense.startAge} years`}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {inputs.hasParentsCare && inputs.parentsCareExpenses && (
+              <div>
+                <p>
+                  <strong>Elderly Care Expenses:</strong>
+                </p>
+                <ul className="list-disc pl-6">
+                  {inputs.parentsCareExpenses.map((expense) => (
+                    <li key={expense.id}>
+                      {formatCurrency(expense.amount)} per year
+                      {expense.startAge > inputs.currentAge &&
+                        ` starting in ${
+                          expense.startAge - inputs.currentAge
+                        } years`}
+                      {expense.endAge &&
+                        ` for ${expense.endAge - expense.startAge} years`}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+            <p className="text-sm text-gray-600">
+              Future expenses are planned in today's dollars and will be
+              automatically adjusted for inflation in the calculations.
             </p>
           </div>
         </section>

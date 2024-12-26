@@ -495,7 +495,22 @@ export default function FireSummaryExport({
             </div>
             <div>
               <span className="text-gray-500">Annual Expenses:</span>{" "}
-              {formatCurrency(inputs.annualExpenses)}
+              {formatCurrency(
+                inputs.annualExpenses +
+                  inputs.additionalRetirementExpenses
+                    .filter((e) => e.startAge === inputs.currentAge)
+                    .reduce((sum, e) => sum + e.amount, 0) +
+                  (inputs.hasKidsExpenses
+                    ? inputs.kidsExpenses
+                        .filter((e) => e.startAge === inputs.currentAge)
+                        .reduce((sum, e) => sum + e.amount, 0)
+                    : 0) +
+                  (inputs.hasParentsCare
+                    ? inputs.parentsCareExpenses
+                        .filter((e) => e.startAge === inputs.currentAge)
+                        .reduce((sum, e) => sum + e.amount, 0)
+                    : 0)
+              )}
             </div>
             <div>
               <span className="text-gray-500">Investment Return:</span>{" "}
